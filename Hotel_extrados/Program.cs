@@ -59,6 +59,7 @@ namespace DemoDapper
                         foreach (var item in habitaciones)
                         {
                             Console.WriteLine("-------------------------------------------------------------");
+                            Console.WriteLine("ESTADO: " + item.id_estado);
                             Console.WriteLine("ID: " + item.id_habitacion);
                             Console.WriteLine("PISO: " + item.piso);
                             Console.WriteLine("NRO HABITACION: " + item.numero_habitacion);
@@ -66,8 +67,7 @@ namespace DemoDapper
                             Console.WriteLine("NRO CAMAS: " + item.camas);
                             Console.WriteLine("COCHERA: " + item.cochera);
                             Console.WriteLine("PRECIO: " + item.precio);
-                            Console.WriteLine("TV: " + item.tv);
-                            Console.WriteLine("ESTADO: " + item.id_estado);
+                            Console.WriteLine("TV: " + item.tv);  
                             Console.WriteLine("SERVICIO HABITACION: " + item.servio_habitacion);
                             Console.WriteLine("HIDROMASAJES: " + item.hidromasajes);
                             Console.WriteLine("-------------------------------------------------------------");
