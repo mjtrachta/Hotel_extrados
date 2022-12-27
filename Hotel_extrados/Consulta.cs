@@ -37,25 +37,21 @@ namespace DemoDapper
                 var parameters = new { Username = username, Password = password };
                 Usuario user = db.QueryFirstOrDefault<Usuario>(sql, parameters);
 
-                if (user.id_rol == 7)
+                if (user.id_rol == 6)
                 {
                     
-                    Console.WriteLine("Bienvenido Atencion al cliente, " + user.nombre);
-                    
-                    Console.Read();
                     return 1;
                 }
-                else if(user.id_rol == 6)
+                else if(user.id_rol == 7)
                 {
-                    Console.WriteLine("Bienvenido Admin, " + user.nombre);
-                    Console.Read();
+                  
                     return 2;
                 }
                 else
                 {
                    
-                    Console.Read();
-                    return 3;
+                    
+                    return 4;
                 }
             }
 

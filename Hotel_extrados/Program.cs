@@ -15,9 +15,9 @@ namespace DemoDapper
             Console.WriteLine("            █░█ █▀█ ▀█▀ █▀▀ █░░   █▀▀ ▀▄▀ ▀█▀ █▀█ ▄▀█ █▀▄ █▀█ █▀");
             Console.WriteLine("            █▀█ █▄█ ░█░ ██▄ █▄▄   ██▄ █░█ ░█░ █▀▄ █▀█ █▄▀ █▄█ ▄█");
             Console.WriteLine("+-----------------------------------------------------------------------------------+");
-            Console.WriteLine("+-----------------------------------------------------------------------------------+");
-        }
 
+            Console.WriteLine("");
+        }
         public static int Login()
         {
             Consulta c1 = new Consulta();
@@ -38,16 +38,17 @@ namespace DemoDapper
             Console.WriteLine("|       3. Cargar cliente                                                     ac |");
             Console.WriteLine("|       4. Reservar habitacion                                                ac |");
             Console.WriteLine("|       5. Cambiar estado del habitacion limpieza(desocupado)-disponible      ac |");
+            Console.WriteLine("|       6. Salir                                                                |");
             Console.WriteLine("+--------------------------------------------------------------------------------+");
         }
         public static void MenuAdmin()
         {
             Console.WriteLine("+--------------------------------------------------------------------------------+");
-            Console.WriteLine("|       6. Agregar una habitacion                                            adm |");
-            Console.WriteLine("|       7. Cambiar estado del habitacion limpieza-disponible-ocupado-remode  adm |");
-            Console.WriteLine("|       8. Cambiar estado del habitacion limpieza-estado anterior            adm |");
-            Console.WriteLine("|       9. Cambiar estado del habitacion renovacion-disponible               adm |");
-            Console.WriteLine("|       10. Salir                                                                |");
+            Console.WriteLine("|       1. Agregar una habitacion                                            adm |");
+            Console.WriteLine("|       2. Cambiar estado del habitacion limpieza-disponible-ocupado-remode  adm |");
+            Console.WriteLine("|       3. Cambiar estado del habitacion limpieza-estado anterior            adm |");
+            Console.WriteLine("|       4. Cambiar estado del habitacion renovacion-disponible               adm |");
+            Console.WriteLine("|       5. Salir                                                                |");
             
             Console.ForegroundColor = ConsoleColor.Blue;
             Console.WriteLine("|   Elige una de las opciones:                                                   |");
@@ -55,8 +56,6 @@ namespace DemoDapper
             Console.WriteLine("+--------------------------------------------------------------------------------+");
 
         }
-
-
         public static void ListarHabitaciones()
         {
             Consulta consultaBD = new Consulta();
@@ -86,11 +85,11 @@ namespace DemoDapper
         {
 
             bool salir = false;
-            int a = 0;
+            
 
             while (!salir)
             {
-
+                LogoExtrados();
                 //try
                 //{
                 int opcion = Login();
@@ -103,81 +102,117 @@ namespace DemoDapper
                         Console.WriteLine("|        BIENVIENDO  AL PANEL DE ADMINISTRADOR                 |");
                         Console.WriteLine("----------------------------------------------------------------");
 
+                        MenuAdmin();
+                        
                         
 
-
-
                         break;
-                        /*
+
                     case 2:
-                        Console.WriteLine("---------------------------------------------------------------");
-                        Console.WriteLine("|      Has elegido la opción 2  LISTAR SUPERVISORES            |");
-                        Console.WriteLine("---------------------------------------------------------------");
+                        Console.WriteLine("----------------------------------------------------------------");
+                        Console.WriteLine("|      BIENVIENDO  AL PANEL DE ATENCION AL CLIENTE             |");
+                        Console.WriteLine("----------------------------------------------------------------");
 
-                        Consulta consultaBDsupervisores = new Consulta();
+                       
+                        bool salir2 = false;
 
-                        IEnumerable<Empleados> supervisores = consultaBDsupervisores.ObtenerSupervisores();
-                        Console.ForegroundColor = ConsoleColor.Blue;
-                        Console.WriteLine("---------------------LISTA DE SUPERVISORES----------------------");
-                        Console.ForegroundColor = ConsoleColor.White;
-                        foreach (var item in supervisores)
+                        while (!salir2)
                         {
-                            Console.WriteLine("-------------------------------------------------------------");
-                            Console.WriteLine("ID: " + item.id_empleado);
-                            Console.WriteLine("NOMBRE: " + item.nombre);
-                            Console.WriteLine("APELLIDO: " + item.apellido);
-                            Console.WriteLine("FECHA DE NAC: " + item.fecha_nacimiento);
-                            Console.WriteLine("CARGO: " + item.descripcion);
-                            Console.WriteLine("JEFE: " + item.id_jefe);
-                            Console.WriteLine("-------------------------------------------------------------");
+                            MenuAtencion();
+                            int opcion2 = Int32.Parse(Console.ReadLine());
+                            switch (opcion2)
+                            {
+                                case 1:
+                                    ListarHabitaciones();
+                                    break;
+                                case 5:
+
+                                    Console.WriteLine("SALIR");
+                                    salir2 = true;
+                                    break;
+
+                                default:
+                                    Console.ForegroundColor = ConsoleColor.Red;
+                                    Console.WriteLine("-------------------------------------------");
+                                    Console.WriteLine("|  ERROR !! Elige una opcion entre 1 y 5  |");
+                                    Console.WriteLine("-------------------------------------------");
+                                    Console.ForegroundColor = ConsoleColor.White;
+
+                                    break;
+                            }
                         }
 
                         break;
 
+                    /*
+                case 2:
+                    Console.WriteLine("---------------------------------------------------------------");
+                    Console.WriteLine("|      Has elegido la opción 2  LISTAR SUPERVISORES            |");
+                    Console.WriteLine("---------------------------------------------------------------");
+
+                    Consulta consultaBDsupervisores = new Consulta();
+
+                    IEnumerable<Empleados> supervisores = consultaBDsupervisores.ObtenerSupervisores();
+                    Console.ForegroundColor = ConsoleColor.Blue;
+                    Console.WriteLine("---------------------LISTA DE SUPERVISORES----------------------");
+                    Console.ForegroundColor = ConsoleColor.White;
+                    foreach (var item in supervisores)
+                    {
+                        Console.WriteLine("-------------------------------------------------------------");
+                        Console.WriteLine("ID: " + item.id_empleado);
+                        Console.WriteLine("NOMBRE: " + item.nombre);
+                        Console.WriteLine("APELLIDO: " + item.apellido);
+                        Console.WriteLine("FECHA DE NAC: " + item.fecha_nacimiento);
+                        Console.WriteLine("CARGO: " + item.descripcion);
+                        Console.WriteLine("JEFE: " + item.id_jefe);
+                        Console.WriteLine("-------------------------------------------------------------");
+                    }
+
+                    break;
+
+                case 3:
+                    Console.WriteLine("--------------------------------------------------------------");
+                    Console.WriteLine("|      Has elegido la opción 3  AGREGAR EMPLEADOS            |");
+                    Console.WriteLine("--------------------------------------------------------------");
+
+                    Empleados personal = new Empleados();
+                    Consulta insertar = new Consulta();
+
+                    Console.WriteLine("Ingrese nombre del empleado: ");
+                    personal.nombre = Console.ReadLine();
+                    Console.WriteLine("Ingrese apellido del empleado: ");
+                    personal.apellido = Console.ReadLine();
+                    Console.WriteLine("Ingrese la fecha de nacimiento del empleado: ");
+                    personal.fecha_nacimiento = DateTime.Parse(Console.ReadLine());
+                    Console.WriteLine("Ingrese id de su jefe ");
+                    personal.id_jefe = int.Parse(Console.ReadLine());
+                    Console.WriteLine("Ingrese numero de cargo: (1-Jefe. 2-Sup. 3-Empl.");
+                    personal.id_cargo = int.Parse(Console.ReadLine());
+
+
+                    insertar.Insertar2(personal);
+
+                    break;
+
+                case 4:
+                    Console.WriteLine("--------------------------------------------------------------");
+                    Console.WriteLine("|      Has elegido la opción 4  ASCENDER EMPLEADOS            |");
+                    Console.WriteLine("--------------------------------------------------------------");
+
+                    Consulta actualizar = new Consulta();
+                    Empleados empleados1 = new Empleados();
+
+
+                    Console.WriteLine("Ingrese el id del empleado que desea ascender: ");
+                    empleados1.id_empleado = int.Parse(Console.ReadLine());
+                    actualizar.Actualizar2(empleados1);
+
+                    break;
+                    */
                     case 3:
-                        Console.WriteLine("--------------------------------------------------------------");
-                        Console.WriteLine("|      Has elegido la opción 3  AGREGAR EMPLEADOS            |");
-                        Console.WriteLine("--------------------------------------------------------------");
 
-                        Empleados personal = new Empleados();
-                        Consulta insertar = new Consulta();
-
-                        Console.WriteLine("Ingrese nombre del empleado: ");
-                        personal.nombre = Console.ReadLine();
-                        Console.WriteLine("Ingrese apellido del empleado: ");
-                        personal.apellido = Console.ReadLine();
-                        Console.WriteLine("Ingrese la fecha de nacimiento del empleado: ");
-                        personal.fecha_nacimiento = DateTime.Parse(Console.ReadLine());
-                        Console.WriteLine("Ingrese id de su jefe ");
-                        personal.id_jefe = int.Parse(Console.ReadLine());
-                        Console.WriteLine("Ingrese numero de cargo: (1-Jefe. 2-Sup. 3-Empl.");
-                        personal.id_cargo = int.Parse(Console.ReadLine());
-
-
-                        insertar.Insertar2(personal);
-
-                        break;
-
-                    case 4:
-                        Console.WriteLine("--------------------------------------------------------------");
-                        Console.WriteLine("|      Has elegido la opción 4  ASCENDER EMPLEADOS            |");
-                        Console.WriteLine("--------------------------------------------------------------");
-
-                        Consulta actualizar = new Consulta();
-                        Empleados empleados1 = new Empleados();
-
-
-                        Console.WriteLine("Ingrese el id del empleado que desea ascender: ");
-                        empleados1.id_empleado = int.Parse(Console.ReadLine());
-                        actualizar.Actualizar2(empleados1);
-
-                        break;
-                        */
-                    case 2:
-
-                        Console.WriteLine("SAlIR");
+                        Console.WriteLine("SALIR");
                         salir = true;
-
                         break;
 
 
