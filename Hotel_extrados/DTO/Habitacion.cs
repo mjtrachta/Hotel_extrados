@@ -30,5 +30,9 @@ namespace DemoDapper
         public bool servio_habitacion { get; set; }
 
         public bool hidromasajes { get; set; }
+
+        public string descripcion { get; set; }
+
+        public string descripcion_estado { get; set; }
     }
 }

@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Security.Cryptography;
 using System.Text;
 using Dapper;
@@ -16,19 +17,6 @@ namespace DemoDapper
         
 
         private string cadenaConexion = ConfigurationManager.ConnectionStrings["Conexion"].ToString();
-
-        public IEnumerable<Habitacion> ObtenerHabitaciones()
-        {
-            using (IDbConnection conexion = new SqlConnection(cadenaConexion))
-            {
-                conexion.Open();
-                var habitaciones = conexion.Query<Habitacion>("SELECT * FROM habitaciones").ToList();
-
-                return habitaciones;
-            }
-        }
-
-
         public int Login(string username, string password)
         {
             using (IDbConnection db = new SqlConnection(cadenaConexion))
@@ -37,26 +25,126 @@ namespace DemoDapper
                 var parameters = new { Username = username, Password = password };
                 Usuario user = db.QueryFirstOrDefault<Usuario>(sql, parameters);
 
-                if (user.id_rol == 6)
+                if (user != null && user.id_rol == 6)
                 {
-                    
                     return 1;
                 }
-                else if(user.id_rol == 7)
+                else if (user != null && user.id_rol == 7)
                 {
-                  
                     return 2;
                 }
                 else
                 {
-                   
-                    
                     return 4;
                 }
             }
-
-
         }
+        public IEnumerable<Habitacion> ObtenerHabitacionesComunes()
+        {
+            using (IDbConnection conexion = new SqlConnection(cadenaConexion))
+            {
+                conexion.Open();
+                var habitaciones = conexion.Query<Habitacion>("SELECT e.descripcion_estado, h.piso, h.numero_habitacion, h.camas, h.cochera, h.precio, h.tv, h.desayuno " +
+                                                              "FROM habitaciones h " +
+                                                              "JOIN Estado_habitaciones e " +
+                                                              "ON h.id_estado = e.id_estado " +
+                                                              "WHERE h.id_tipo = 1").ToList();
+                return habitaciones;
+            }
+        }
+
+        public IEnumerable<Habitacion> ObtenerHabitacionesVip()
+        {
+            using (IDbConnection conexion = new SqlConnection(cadenaConexion))
+            {
+                conexion.Open();
+                var habitaciones = conexion.Query<Habitacion>("SELECT e.descripcion_estado, h.piso, h.numero_habitacion, h.camas ,h.cochera, h.precio, h.servicio_habitacion, h.hidromasajes " +
+                                                                  "FROM habitaciones h " +
+                                                                  "JOIN Estado_habitaciones e " +
+                                                                  "ON h.id_estado = e.id_estado " +
+                                                                  "WHERE h.id_tipo = 2").ToList();
+                return habitaciones;
+                
+            }
+        }
+
+        public IEnumerable<Habitacion> ObtenerHabitacionesDisponibles()
+        {
+            using (IDbConnection conexion = new SqlConnection(cadenaConexion))
+            {
+                conexion.Open();
+                var habitaciones = conexion.Query<Habitacion>("SELECT h.id_habitacion, e.descripcion_estado, t.descripcion,h.piso, h.numero_habitacion, h.camas, h.cochera, h.precio, h.tv, h.desayuno, h.servicio_habitacion, h.hidromasajes "+
+                                                                "FROM habitaciones h "+
+                                                                "JOIN Estado_habitaciones e "+
+                                                                "ON h.id_estado = e.id_estado "+
+                                                                "JOIN Tipo_habitaciones t "+
+                                                                "ON h.id_tipo = t.id_tipo "+
+                                                                "WHERE h.id_estado = 2").ToList();
+                return habitaciones;
+
+            }
+        }
+
+        public IEnumerable<Habitacion> ObtenerHabitacionesDisponiblesLimpieza()
+        {
+            using (IDbConnection conexion = new SqlConnection(cadenaConexion))
+            {
+                conexion.Open();
+                var habitaciones = conexion.Query<Habitacion>("SELECT h.id_habitacion, e.descripcion_estado, t.descripcion,h.piso, h.numero_habitacion, h.camas, h.cochera, h.precio, h.tv, h.desayuno, h.servicio_habitacion, h.hidromasajes " +
+                                                                "FROM habitaciones h " +
+                                                                "JOIN Estado_habitaciones e " +
+                                                                "ON h.id_estado = e.id_estado " +
+                                                                "JOIN Tipo_habitaciones t " +
+                                                                "ON h.id_tipo = t.id_tipo " +
+                                                                "WHERE h.id_estado = 2 or h.id_estado = 3").ToList();
+                return habitaciones;
+
+            }
+        }
+
+        //Parametros
+        public int CargarCliente(Cliente cliente)
+        {
+            using (IDbConnection conexion = new SqlConnection(cadenaConexion))
+            {
+
+                conexion.Open();
+                string sentenciaSql = "INSERT INTO [Clientes]([cuil],[nombre],[apellido],[mail]) " +
+                                  "VALUES(@cuil, @nombre, @apellido, @mail)";
+
+                return conexion.Execute(sentenciaSql, new { cuil = cliente.cuil, nombre = cliente.nombre, apellido = cliente.apellido, mail = cliente.mail });;
+            }
+        }
+
+        public int CargarReserva(Reserva reserva)
+        {
+            using (IDbConnection conexion = new SqlConnection(cadenaConexion))
+            {
+
+                conexion.Open();
+                string sentenciaSql = "INSERT INTO [ClienteXHabitacion]([cuil_cliente],[id_habitacion],[fecha_desde],[fecha_hasta]) " +
+                                  "VALUES(@cuil_cliente, @id_habitacion, @fecha_desde, @fecha_hasta)";
+
+                return conexion.Execute(sentenciaSql, new { cuil_cliente = reserva.cuil_cliente, id_habitacion = reserva.id_habitacion, fecha_desde = reserva.fecha_desde, fecha_hasta = reserva.fecha_hasta }); ;
+            }
+        }
+
+        public int ActualizarEstado(Habitacion actualizarEstado)
+        {
+            using (IDbConnection conexion = new SqlConnection(cadenaConexion))
+            {
+                conexion.Open();
+                var comando = "UPDATE Habitaciones "+
+                              " SET id_estado = CASE id_estado "+
+                              "WHEN '2' THEN '3'  "+
+                              "WHEN '3' THEN '2'  "+"" +
+                              "ELSE NULL  "+
+                              "END "+
+                              "WHERE id_habitacion = 2";
+                return conexion.Execute(comando, new { id_habitacion = actualizarEstado.id_habitacion });
+            }
+        }
+
         /*
         //Parametros
         public IEnumerable<Empleados> ObtenerSupervisores()
@@ -77,73 +165,50 @@ namespace DemoDapper
             }
         }
         */
-       /* public int Insertar(Empleados personal)
-        {
-            using (IDbConnection conexion = new SqlConnection(cadenaConexion))
-            {
-                conexion.Open();
-                string comando = "INSERT INTO [Empleados]([nombre],[apellido],[fecha_nacimiento],[id_jefe], [id_cargo]) VALUES('{0}','{1}','{2}','{3}','{4}')";
-                string sentencia = string.Format(comando, personal.nombre, personal.apellido, personal.fecha_nacimiento, personal.id_jefe, personal.id_cargo);
+        /* 
 
-                return conexion.Execute(sentencia);
-            }
-        }
-        //Parametros
-        public int Insertar2(Empleados personal)
-        {
+         //Parametros
 
-
-            using (IDbConnection conexion = new SqlConnection(cadenaConexion))
-            {
-
-                conexion.Open();
-                string sentenciaSql = "INSERT INTO [Empleados]([nombre],[apellido],[fecha_nacimiento],[id_jefe], [id_cargo]) " +
-                                  "VALUES(@nombre, @apellido, @fecha_nacimiento, @id_jefe, @id_cargo)";
-
-                return conexion.Execute(sentenciaSql, new { nombre = personal.nombre, apellido = personal.apellido, fecha_nacimiento = personal.fecha_nacimiento, id_jefe = personal.id_jefe, id_cargo = personal.id_cargo });
-            }
-        }
+         public int Actualizar2(Empleados personal)
+         {
+             using (IDbConnection conexion = new SqlConnection(cadenaConexion))
+             {
+                 conexion.Open();
+                 var comando = "UPDATE[Empleados] SET[id_cargo] = 1 WHERE[id_empleado] = @id_empleado_asciende";
+                 return conexion.Execute(comando, new { id_empleado_asciende = personal.id_empleado });
+             }
+         }
 
 
 
+         //public void Ascender(Personal personal)
+         //{
+         //    using (IDbConnection conexion = new SqlConnection(cadena))
+         //    {
+         //        conexion.Open();
+         //        var comando = "UPDATE [Personal] SET [Id_Cargo= @Id_Cargo]";
+         //        var sentencia = new { Id_Cargo = 2 }; / string.Format(comando, personal.Id_Cargo);/
 
-        public int Actualizar(int id_empleado)
-        {
-            using (IDbConnection conexion = new SqlConnection(cadenaConexion))
-            {
-                conexion.Open();
-                var comando = "UPDATE[Empleados] SET[id_cargo] = 1 WHERE[id_empleado] = " + id_empleado;
-                return conexion.Execute(comando);
-            }
-        }
+         //        conexion.Execute(comando, sentencia);
+         //    }
 
-        //Parametros
-
-        public int Actualizar2(Empleados personal)
-        {
-            using (IDbConnection conexion = new SqlConnection(cadenaConexion))
-            {
-                conexion.Open();
-                var comando = "UPDATE[Empleados] SET[id_cargo] = 1 WHERE[id_empleado] = @id_empleado_asciende";
-                return conexion.Execute(comando, new { id_empleado_asciende = personal.id_empleado });
-            }
-        }
+         //}
+        */
 
 
 
-        //public void Ascender(Personal personal)
-        //{
-        //    using (IDbConnection conexion = new SqlConnection(cadena))
-        //    {
-        //        conexion.Open();
-        //        var comando = "UPDATE [Personal] SET [Id_Cargo= @Id_Cargo]";
-        //        var sentencia = new { Id_Cargo = 2 }; / string.Format(comando, personal.Id_Cargo);/
-
-        //        conexion.Execute(comando, sentencia);
-        //    }
-
-        //}
-       */
-
+        /* }
+                else if(user != null && user.id_tipo == 2)
+                {
+                    var habitaciones = conexion.Query<Habitacion>("SELECT e.descripcion ,h.piso, h.numero_habitacion, h.camas, h.cochera, h.precio, h.tv, h.desayuno " +
+                                                                  "FROM habitaciones h " +
+                                                                  "JOIN Estado_habitaciones e " +
+                                                                  "on h.id_estado = e.id_estado").ToList();
+                    return habitaciones;
+                }
+                else
+                {
+                    return null;
+                }   */
     }
 }
