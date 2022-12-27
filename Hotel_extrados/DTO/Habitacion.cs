@@ -27,7 +27,7 @@ namespace DemoDapper
 
         public int id_estado { get; set; }
 
-        public bool servio_habitacion { get; set; }
+        public bool servicio_habitacion { get; set; }
 
         public bool hidromasajes { get; set; }
 

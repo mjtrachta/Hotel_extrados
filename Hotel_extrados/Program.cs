@@ -97,7 +97,7 @@ namespace DemoDapper
                     Console.WriteLine("COCHERA: " + item.cochera);
                     Console.WriteLine("PRECIO: " + item.precio);
                     Console.WriteLine("TV: " + item.tv);
-                    Console.WriteLine("SERVICIO HABITACION: " + item.servio_habitacion);
+                    Console.WriteLine("SERVICIO HABITACION: " + item.servicio_habitacion);
                     Console.WriteLine("HIDRO: " + item.hidromasajes);
                     Console.WriteLine("-------------------------------------------------------------");
 
@@ -126,7 +126,7 @@ namespace DemoDapper
                 Console.WriteLine("PRECIO: " + item.precio);
                 Console.WriteLine("TV: " + item.tv);
                 Console.WriteLine("DESAYUNO: " + item.desayuno);
-                Console.WriteLine("SERVICIO HABITACION: " + item.servio_habitacion);
+                Console.WriteLine("SERVICIO HABITACION: " + item.servicio_habitacion);
                 Console.WriteLine("HIDRO: " + item.hidromasajes);
                 Console.WriteLine("----------------------------------------------------------------");
 
@@ -174,6 +174,79 @@ namespace DemoDapper
             insertar.CargarReserva(reserva);
         }
 
+        public static void AgregarHabitacion()
+        {
+            Console.WriteLine("--------------------------------------------------------------");
+            Console.WriteLine("|      Has elegido la opción 1  AGREGAR HABITACIÓN           |");
+            Console.WriteLine("--------------------------------------------------------------");
+
+            Habitacion habitacion = new Habitacion();
+            Consulta insertar = new Consulta();
+
+            Console.WriteLine("--------------------------------------------------------------");
+            Console.WriteLine("Ingrese el piso de la habitación: ");
+            habitacion.piso = int.Parse(Console.ReadLine());
+
+            Console.WriteLine("--------------------------------------------------------------");
+            Console.WriteLine("Ingrese el número de la habitación: ");
+            habitacion.numero_habitacion = int.Parse(Console.ReadLine());
+
+            Console.WriteLine("--------------------------------------------------------------");
+            Console.WriteLine("Común: 1 ");
+            Console.WriteLine("VIP: 2");
+            Console.WriteLine("Ingrese el tipo de la habitación: ");
+            habitacion.id_tipo = int.Parse(Console.ReadLine());
+
+            Console.WriteLine("--------------------------------------------------------------");
+            Console.WriteLine("Ingrese el número de camas de la habitación: ");
+            habitacion.camas = int.Parse(Console.ReadLine());
+
+            Console.WriteLine("--------------------------------------------------------------");
+            Console.WriteLine("Sí tiene: true ");
+            Console.WriteLine("No tiene: false");
+            Console.WriteLine("Ingrese si tiene cochera la habitación: ");
+            habitacion.cochera = bool.Parse(Console.ReadLine());
+
+            Console.WriteLine("--------------------------------------------------------------");
+            Console.WriteLine("Ingrese el precio por noche de la habitación: ");
+            habitacion.precio = int.Parse(Console.ReadLine());
+
+            Console.WriteLine("--------------------------------------------------------------");
+            Console.WriteLine("Sí tiene: true ");
+            Console.WriteLine("No tiene: false");
+            Console.WriteLine("Ingrese si tiene tv la habitación: ");
+            habitacion.tv = bool.Parse(Console.ReadLine());
+
+            Console.WriteLine("--------------------------------------------------------------");
+            Console.WriteLine("Sí tiene: true ");
+            Console.WriteLine("No tiene: false");
+            Console.WriteLine("Ingrese si tiene desayuno la habitación: ");
+            habitacion.desayuno = bool.Parse(Console.ReadLine());
+
+            Console.WriteLine("--------------------------------------------------------------");
+            Console.WriteLine("Ocupado: 1");
+            Console.WriteLine("Disponible: 2");
+            Console.WriteLine("Limpieza: 3");
+            Console.WriteLine("Renovación: 4");
+            Console.WriteLine("Ingrese el estado de la habitación: ");
+            habitacion.id_estado = int.Parse(Console.ReadLine());
+
+            Console.WriteLine("--------------------------------------------------------------");
+            Console.WriteLine("Sí tiene: true ");
+            Console.WriteLine("No tiene: false");
+            Console.WriteLine("Ingrese si tiene servicio a la habitación: ");
+            habitacion.servicio_habitacion = bool.Parse(Console.ReadLine());
+
+            Console.WriteLine("--------------------------------------------------------------");
+            Console.WriteLine("Sí tiene: true ");
+            Console.WriteLine("No tiene: false");
+            Console.WriteLine("Ingrese si tiene hidromasajes la habitación: ");
+            habitacion.hidromasajes = bool.Parse(Console.ReadLine());
+
+
+            insertar.CargarHabitacion(habitacion);
+        }
+
         static void Main(string[] args)
         {
 
@@ -204,7 +277,7 @@ namespace DemoDapper
                             switch (opcion1)
                             {
                                 case 1:
-                                    ListarHabitaciones();
+                                    AgregarHabitacion();
                                     break;
                                 case 2:
                                     
@@ -278,7 +351,7 @@ namespace DemoDapper
 
 
                                     Console.WriteLine("Ingrese el id del de la habitacion que desea actualizar: ");
-                                    habitacion.id_estado = int.Parse(Console.ReadLine());
+                                    habitacion.id_habitacion = int.Parse(Console.ReadLine());
                                     actualizar.ActualizarEstado(habitacion);
 
                                     break;

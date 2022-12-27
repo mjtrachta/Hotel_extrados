@@ -137,13 +137,27 @@ namespace DemoDapper
                 var comando = "UPDATE Habitaciones "+
                               " SET id_estado = CASE id_estado "+
                               "WHEN '2' THEN '3'  "+
-                              "WHEN '3' THEN '2'  "+"" +
+                              "WHEN '3' THEN '2'  "+
                               "ELSE NULL  "+
                               "END "+
-                              "WHERE id_habitacion = 2";
+                              "WHERE id_habitacion = @id_habitacion";
                 return conexion.Execute(comando, new { id_habitacion = actualizarEstado.id_habitacion });
             }
         }
+
+        public int CargarHabitacion(Habitacion habitacion)
+        {
+            using (IDbConnection conexion = new SqlConnection(cadenaConexion))
+            {
+
+                conexion.Open();
+                string sentenciaSql = "INSERT INTO [Habitaciones]([piso],[numero_habitacion],[id_tipo],[camas],[cochera],[precio],[tv],[desayuno],[id_estado],[servicio_habitacion],[hidromasajes]) " +
+                                  "VALUES(@piso, @numero_habitacion, @id_tipo, @camas, @cochera, @precio, @tv, @desayuno, @id_estado, @servicio_habitacion, @hidromasajes)";
+
+                return conexion.Execute(sentenciaSql, new { id_habitacion = habitacion.id_habitacion, piso = habitacion.piso, numero_habitacion = habitacion.numero_habitacion, id_tipo = habitacion.id_tipo, camas = habitacion.camas, cochera = habitacion.cochera, precio = habitacion.precio, tv = habitacion.tv, desayuno = habitacion.desayuno, id_estado = habitacion.id_estado, servicio_habitacion = habitacion.servicio_habitacion, hidromasajes = habitacion.hidromasajes }); ;
+            }
+        }
+
 
         /*
         //Parametros
