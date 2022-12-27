@@ -5,29 +5,82 @@ using System.Text;
 
 namespace DemoDapper
 {
+
     class Program
     {
 
-        public static void Menu()
+        public static void LogoExtrados()
+        {
+            Console.WriteLine("+-----------------------------------------------------------------------------------+");
+            Console.WriteLine("            █░█ █▀█ ▀█▀ █▀▀ █░░   █▀▀ ▀▄▀ ▀█▀ █▀█ ▄▀█ █▀▄ █▀█ █▀");
+            Console.WriteLine("            █▀█ █▄█ ░█░ ██▄ █▄▄   ██▄ █░█ ░█░ █▀▄ █▀█ █▄▀ █▄█ ▄█");
+            Console.WriteLine("+-----------------------------------------------------------------------------------+");
+            Console.WriteLine("+-----------------------------------------------------------------------------------+");
+        }
+
+        public static int Login()
+        {
+            Consulta c1 = new Consulta();
+            
+            Console.WriteLine("INGRESE SU EMAIL: ");
+            string mail = Console.ReadLine();
+            Console.WriteLine("INGRESE SU CONTRASEÑA: ");
+            string pass = Console.ReadLine();
+            Console.WriteLine("+-----------------------------------------------------------------------------------+");
+            int a = c1.Login(mail, pass);
+            return a;
+        }
+        public static void MenuAtencion()
         {
             Console.WriteLine("+--------------------------------------------------------------------------------+");
-            Console.WriteLine("|       0. Login                                                                 |");
             Console.WriteLine("|       1. Listar todas las habitaciones    (ocupadas x cuantos dias)         ac |");
             Console.WriteLine("|       2. Listar todas las habitaciones disponibles                          ac |");
             Console.WriteLine("|       3. Cargar cliente                                                     ac |");
             Console.WriteLine("|       4. Reservar habitacion                                                ac |");
             Console.WriteLine("|       5. Cambiar estado del habitacion limpieza(desocupado)-disponible      ac |");
+            Console.WriteLine("+--------------------------------------------------------------------------------+");
+        }
+        public static void MenuAdmin()
+        {
+            Console.WriteLine("+--------------------------------------------------------------------------------+");
             Console.WriteLine("|       6. Agregar una habitacion                                            adm |");
             Console.WriteLine("|       7. Cambiar estado del habitacion limpieza-disponible-ocupado-remode  adm |");
             Console.WriteLine("|       8. Cambiar estado del habitacion limpieza-estado anterior            adm |");
             Console.WriteLine("|       9. Cambiar estado del habitacion renovacion-disponible               adm |");
             Console.WriteLine("|       10. Salir                                                                |");
-            Console.WriteLine("+--------------------------------------------------------------------------------+");
+            
             Console.ForegroundColor = ConsoleColor.Blue;
             Console.WriteLine("|   Elige una de las opciones:                                                   |");
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine("+--------------------------------------------------------------------------------+");
 
+        }
+
+
+        public static void ListarHabitaciones()
+        {
+            Consulta consultaBD = new Consulta();
+
+            IEnumerable<Habitacion> habitaciones = consultaBD.ObtenerHabitaciones();
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.WriteLine("---------------------LISTA DE HABITACIONES----------------------");
+            Console.ForegroundColor = ConsoleColor.White;
+            foreach (var item in habitaciones)
+            {
+                Console.WriteLine("-------------------------------------------------------------");
+                Console.WriteLine("ESTADO: " + item.id_estado);
+                Console.WriteLine("ID: " + item.id_habitacion);
+                Console.WriteLine("PISO: " + item.piso);
+                Console.WriteLine("NRO HABITACION: " + item.numero_habitacion);
+                Console.WriteLine("TIPO DE HABITACION: " + item.id_tipo);
+                Console.WriteLine("NRO CAMAS: " + item.camas);
+                Console.WriteLine("COCHERA: " + item.cochera);
+                Console.WriteLine("PRECIO: " + item.precio);
+                Console.WriteLine("TV: " + item.tv);
+                Console.WriteLine("SERVICIO HABITACION: " + item.servio_habitacion);
+                Console.WriteLine("HIDROMASAJES: " + item.hidromasajes);
+                Console.WriteLine("-------------------------------------------------------------");
+            }
         }
         static void Main(string[] args)
         {
@@ -37,41 +90,20 @@ namespace DemoDapper
 
             while (!salir)
             {
-                Menu();
 
                 //try
                 //{
-                int opcion = Int32.Parse(Console.ReadLine());
+                int opcion = Login();
 
                 switch (opcion)
                 {
+                  
                     case 1:
                         Console.WriteLine("----------------------------------------------------------------");
-                        Console.WriteLine("|      Has elegido la opción 1  LISTAR HABITACIONES            |");
+                        Console.WriteLine("|        BIENVIENDO  AL PANEL DE ADMINISTRADOR                 |");
                         Console.WriteLine("----------------------------------------------------------------");
 
-                        Consulta consultaBD = new Consulta();
-
-                        IEnumerable<Habitacion> habitaciones = consultaBD.ObtenerHabitaciones();
-                        Console.ForegroundColor = ConsoleColor.Blue;
-                        Console.WriteLine("---------------------LISTA DE EMPLEADOS----------------------");
-                        Console.ForegroundColor = ConsoleColor.White;
-                        foreach (var item in habitaciones)
-                        {
-                            Console.WriteLine("-------------------------------------------------------------");
-                            Console.WriteLine("ESTADO: " + item.id_estado);
-                            Console.WriteLine("ID: " + item.id_habitacion);
-                            Console.WriteLine("PISO: " + item.piso);
-                            Console.WriteLine("NRO HABITACION: " + item.numero_habitacion);
-                            Console.WriteLine("TIPO DE HABITACION: " + item.id_tipo);
-                            Console.WriteLine("NRO CAMAS: " + item.camas);
-                            Console.WriteLine("COCHERA: " + item.cochera);
-                            Console.WriteLine("PRECIO: " + item.precio);
-                            Console.WriteLine("TV: " + item.tv);  
-                            Console.WriteLine("SERVICIO HABITACION: " + item.servio_habitacion);
-                            Console.WriteLine("HIDROMASAJES: " + item.hidromasajes);
-                            Console.WriteLine("-------------------------------------------------------------");
-                        }
+                        
 
 
 

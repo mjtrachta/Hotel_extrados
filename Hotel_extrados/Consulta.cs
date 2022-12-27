@@ -4,13 +4,17 @@ using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using Dapper;
+using Hotel_extrados;
 
 namespace DemoDapper
 {
     public class Consulta
     {
+        
+
         private string cadenaConexion = ConfigurationManager.ConnectionStrings["Conexion"].ToString();
 
         public IEnumerable<Habitacion> ObtenerHabitaciones()
@@ -18,10 +22,44 @@ namespace DemoDapper
             using (IDbConnection conexion = new SqlConnection(cadenaConexion))
             {
                 conexion.Open();
-                var habitaciones = conexion.Query<Habitacion>("SELECT * FROM habitaciones WHERE id_estado = 2").ToList();
+                var habitaciones = conexion.Query<Habitacion>("SELECT * FROM habitaciones").ToList();
 
                 return habitaciones;
             }
+        }
+
+
+        public int Login(string username, string password)
+        {
+            using (IDbConnection db = new SqlConnection(cadenaConexion))
+            {
+                string sql = "SELECT * FROM Usuarios WHERE mail = @Username AND pass = @Password";
+                var parameters = new { Username = username, Password = password };
+                Usuario user = db.QueryFirstOrDefault<Usuario>(sql, parameters);
+
+                if (user.id_rol == 7)
+                {
+                    
+                    Console.WriteLine("Bienvenido Atencion al cliente, " + user.nombre);
+                    
+                    Console.Read();
+                    return 1;
+                }
+                else if(user.id_rol == 6)
+                {
+                    Console.WriteLine("Bienvenido Admin, " + user.nombre);
+                    Console.Read();
+                    return 2;
+                }
+                else
+                {
+                   
+                    Console.Read();
+                    return 3;
+                }
+            }
+
+
         }
         /*
         //Parametros
