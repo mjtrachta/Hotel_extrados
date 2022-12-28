@@ -13,6 +13,7 @@ namespace Hotel_extrados
         public int id_habitacion { get; set; }
         public DateTime fecha_desde { get; set; }
         public DateTime fecha_hasta { get; set; }
+        public int dias_ocupados { get; set; }
 
     }
 }

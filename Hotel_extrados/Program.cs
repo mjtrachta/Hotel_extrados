@@ -247,6 +247,27 @@ namespace DemoDapper
             insertar.CargarHabitacion(habitacion);
         }
 
+        public static void ListarDiasOcupados()
+        {
+            Consulta consultaBD = new Consulta();
+
+            IEnumerable<Reserva> diasOcupados = consultaBD.DiasOcupados();
+
+
+
+            foreach (var item in diasOcupados)
+            {
+                Console.WriteLine("-----------------------------------------------------------------");
+                Console.WriteLine("cuil: " + item.cuil_cliente);
+                Console.WriteLine("id habitacion: " + item.id_habitacion);
+                Console.WriteLine("fecha desde: " + item.fecha_desde);
+                Console.WriteLine("dias: " + item.dias_ocupados);
+                
+                Console.WriteLine("----------------------------------------------------------------");
+
+            }
+        }
+
         static void Main(string[] args)
         {
 
@@ -280,6 +301,10 @@ namespace DemoDapper
                                     AgregarHabitacion();
                                     break;
                                 case 2:
+                                    ListarDiasOcupados();
+
+
+                                    break;
                                     
                                 case 5:
 
@@ -331,7 +356,7 @@ namespace DemoDapper
                                     Console.WriteLine("|      Has elegido la opción 5  CAMBIAR DE ESTADO            |");
                                     Console.WriteLine("--------------------------------------------------------------");
 
-                                    Consulta consultaBD = new Consulta();
+                                    Consulta consultaBD = new Consulta();//
 
                                     IEnumerable<Habitacion> habitacionDisponibleLimpieza = consultaBD.ObtenerHabitacionesDisponiblesLimpieza();
 
@@ -438,7 +463,7 @@ namespace DemoDapper
                     default:
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine("-------------------------------------------");
-                        Console.WriteLine("|  ERROR !! Elige una opcion entre 1 y 5  |");
+                        Console.WriteLine("|  ERROR !! Elige una opcion entre 1 y   |");
                         Console.WriteLine("-------------------------------------------");
                         Console.ForegroundColor = ConsoleColor.White;
 

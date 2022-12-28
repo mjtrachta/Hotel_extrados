@@ -142,6 +142,7 @@ namespace DemoDapper
                               "END "+
                               "WHERE id_habitacion = @id_habitacion";
                 return conexion.Execute(comando, new { id_habitacion = actualizarEstado.id_habitacion });
+                
             }
         }
 
@@ -157,6 +158,59 @@ namespace DemoDapper
                 return conexion.Execute(sentenciaSql, new { id_habitacion = habitacion.id_habitacion, piso = habitacion.piso, numero_habitacion = habitacion.numero_habitacion, id_tipo = habitacion.id_tipo, camas = habitacion.camas, cochera = habitacion.cochera, precio = habitacion.precio, tv = habitacion.tv, desayuno = habitacion.desayuno, id_estado = habitacion.id_estado, servicio_habitacion = habitacion.servicio_habitacion, hidromasajes = habitacion.hidromasajes }); ;
             }
         }
+
+        public IEnumerable<Reserva> DiasOcupados()
+        {
+            using (IDbConnection conexion = new SqlConnection(cadenaConexion))
+            {
+                conexion.Open();
+                var dias = conexion.Query<Reserva>("SELECT cuil_cliente, id_habitacion, fecha_desde, DATEDIFF(DAY, fecha_desde, fecha_hasta) AS 'dias_ocupados' \r\nFROM ClienteXHabitacion\r\nWHERE cuil_cliente = 20422895460 and id_habitacion = 2 and fecha_desde = '02-02-2023'").ToList();
+                return dias;
+            }
+        }
+
+
+
+        /*
+         public int ActualizarEstado(Habitacion actualizarEstado)
+        {
+            using (IDbConnection conexion = new SqlConnection(cadenaConexion))
+            {
+                conexion.Open();
+                var comando = "UPDATE Habitaciones "+
+                              " SET id_estado = CASE id_estado "+
+                              "WHEN '2' THEN '3'  "+
+                              "WHEN '3' THEN '2'  "+
+                              "ELSE NULL  "+
+                              "END "+
+                              "WHERE id_habitacion = @id_habitacion";
+
+                var a = conexion.Execute(comando, new { id_habitacion = actualizarEstado.id_habitacion });
+                conexion.Close();
+                return a;
+                
+            }
+        }
+         */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
         /*
