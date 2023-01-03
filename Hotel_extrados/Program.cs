@@ -37,8 +37,7 @@ namespace DemoDapper
             Console.WriteLine("|       2. Cambiar estado del habitacion limpieza-disponible-ocupado-remode  adm |");
             Console.WriteLine("|       3. Cambiar estado del habitacion limpieza-estado anterior            adm |");
             Console.WriteLine("|       4. Cambiar estado del habitacion renovacion-disponible               adm |");
-            Console.WriteLine("|       5. Salir                                                                |");
-
+            Console.WriteLine("|       5. Salir                                                                 |");
             Console.ForegroundColor = ConsoleColor.Blue;
             Console.WriteLine("|   Elige una de las opciones:                                                   |");
             Console.ForegroundColor = ConsoleColor.White;
@@ -156,7 +155,7 @@ namespace DemoDapper
         public static void AgregarReserva()
         {
             Console.WriteLine("--------------------------------------------------------------");
-            Console.WriteLine("|      Has elegido la opción  3 AGREGAR RESERVA            |");
+            Console.WriteLine("|      Has elegido la opción  3 AGREGAR RESERVA              |");
             Console.WriteLine("--------------------------------------------------------------");
 
             Reserva reserva = new Reserva();
@@ -268,6 +267,46 @@ namespace DemoDapper
             }
         }
 
+
+
+        public static void ConsultarEstadoHoy()
+        {
+            Consulta consultaBD = new Consulta();
+
+            Habitacion habitacionEstado = new Habitacion();
+
+            
+            Console.WriteLine("Ingrese el id de la habitacion de desea cambiar al estado anterior: ");
+            int id_habitacion = int.Parse(Console.ReadLine());
+            habitacionEstado.id_habitacion = id_habitacion;
+
+            IEnumerable<Reserva> estadoHoy = consultaBD.EstadoHabitacionHoy(id_habitacion);
+            Console.WriteLine(estadoHoy);
+
+            string estado;
+
+            foreach (var item in estadoHoy)
+            {
+
+                estado = (item.registros);
+   
+                if (estado == "True")
+                {
+                    consultaBD.ActualizarEstadoLimpiezaADisponible(habitacionEstado);
+                }
+                else if (estado == "False")
+                {
+                    continue;
+                }
+                else
+                {
+                    Console.WriteLine("----------------------EEEEERRRROOROOOOOOORRRRRR---------------------------");
+                }
+            }
+
+            
+        }
+
         static void Main(string[] args)
         {
 
@@ -301,8 +340,56 @@ namespace DemoDapper
                                     AgregarHabitacion();
                                     break;
                                 case 2:
-                                    ListarDiasOcupados();
+                                    Console.WriteLine("--------------------------------------------------------------");
+                                    Console.WriteLine("|      Has elegido la opción 4  CAMBIAR DE ESTADO R a D           |");
+                                    Console.WriteLine("--------------------------------------------------------------");
 
+                                    Consulta consultaBD = new Consulta();//
+
+                                    IEnumerable<Habitacion> habitacionRAD = consultaBD.ObtenerHabitacionesRenovacion();
+
+                                    foreach (var item in habitacionRAD)
+                                    {
+                                        Console.WriteLine("-----------------------------------------------------------------");
+                                        Console.WriteLine("ID HABITACION: " + item.id_habitacion);
+                                        Console.WriteLine("ESTADO: " + item.descripcion_estado);
+                                        Console.WriteLine("PISO: " + item.piso);
+                                        Console.WriteLine("HABITACION: " + item.numero_habitacion);
+                                        Console.WriteLine("----------------------------------------------------------------");
+                                    }
+
+
+                                    Habitacion habitacion = new Habitacion();
+                                    break;
+                                case 3:
+                                    ConsultarEstadoHoy();
+                                    break;
+                                case 4:
+                                    Console.WriteLine("--------------------------------------------------------------");
+                                    Console.WriteLine("|      Has elegido la opción 4  CAMBIAR DE ESTADO R a D           |");
+                                    Console.WriteLine("--------------------------------------------------------------");
+
+                                    Consulta consultaBD2 = new Consulta();//
+
+                                    IEnumerable<Habitacion> habitacionRenovacionADisponible = consultaBD2.ObtenerHabitacionesRenovacion();
+
+                                    foreach (var item in habitacionRenovacionADisponible)
+                                    {
+                                        Console.WriteLine("-----------------------------------------------------------------");
+                                        Console.WriteLine("ID HABITACION: " + item.id_habitacion);
+                                        Console.WriteLine("ESTADO: " + item.descripcion_estado);
+                                        Console.WriteLine("PISO: " + item.piso);
+                                        Console.WriteLine("HABITACION: " + item.numero_habitacion);
+                                        Console.WriteLine("----------------------------------------------------------------");
+
+                                    }
+
+                                    
+                                    Habitacion habitacion2 = new Habitacion();
+
+                                    Console.WriteLine("Ingrese el id del de la habitacion que desea actualizar: ");
+                                    habitacion2.id_habitacion = int.Parse(Console.ReadLine());
+                                    consultaBD2.ActualizarEstadoRenovacionADisponible(habitacion2);
 
                                     break;
                                     
@@ -468,7 +555,6 @@ namespace DemoDapper
                         Console.ForegroundColor = ConsoleColor.White;
 
                         break;
-
                 }
                 //}
                 //catch (Exception)
@@ -479,11 +565,6 @@ namespace DemoDapper
                 //    Console.WriteLine("-------------------------------------------");
                 //    Console.ForegroundColor = ConsoleColor.White;
                 //}
-
-
-
-
-
             }
         }
     }

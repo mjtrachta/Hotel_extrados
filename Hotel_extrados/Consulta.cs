@@ -102,6 +102,22 @@ namespace DemoDapper
             }
         }
 
+        public IEnumerable<Habitacion> ObtenerHabitacionesRenovacion()
+        {
+            using (IDbConnection conexion = new SqlConnection(cadenaConexion))
+            {
+                conexion.Open();
+                var habitaciones = conexion.Query<Habitacion>("SELECT h.id_habitacion, e.descripcion_estado, t.descripcion,h.piso, h.numero_habitacion, h.camas, h.cochera, h.precio, h.tv, h.desayuno, h.servicio_habitacion, h.hidromasajes " +
+                                                                "FROM habitaciones h " +
+                                                                "JOIN Estado_habitaciones e " +
+                                                                "ON h.id_estado = e.id_estado " +
+                                                                "JOIN Tipo_habitaciones t " +
+                                                                "ON h.id_tipo = t.id_tipo " +
+                                                                "WHERE h.id_estado = 4 ").ToList();
+                return habitaciones;
+
+            }
+        }
         //Parametros
         public int CargarCliente(Cliente cliente)
         {
@@ -110,7 +126,7 @@ namespace DemoDapper
 
                 conexion.Open();
                 string sentenciaSql = "INSERT INTO [Clientes]([cuil],[nombre],[apellido],[mail]) " +
-                                  "VALUES(@cuil, @nombre, @apellido, @mail)";
+                                      "VALUES(@cuil, @nombre, @apellido, @mail)";
 
                 return conexion.Execute(sentenciaSql, new { cuil = cliente.cuil, nombre = cliente.nombre, apellido = cliente.apellido, mail = cliente.mail });;
             }
@@ -169,8 +185,176 @@ namespace DemoDapper
             }
         }
 
+   
+        public IEnumerable<Reserva> EstadoHabitacionHoy(int id_habitacion)
+        {
+            using (IDbConnection conexion = new SqlConnection(cadenaConexion))
+            {
+                conexion.Open();
+                var dias = conexion.Query<Reserva>("SELECT CASE COUNT (*) " +
+                    "WHEN 0 THEN 'False' " +
+                    "WHEN 1 THEN 'True' " +
+                    "ELSE 'ERROR' " +
+                    "END AS registros " +
+                    "FROM ClienteXHabitacion c " +
+                    "WHERE c.id_habitacion = " + id_habitacion + " AND " +
+                    "GETDATE() >= (fecha_desde) AND " +
+                    "GETDATE() <= (fecha_hasta)").ToList();
+                return dias;
+            }
+        }
+        
+/*
+        public int EstadoHabitacionHoy(Reserva reserva)
+        {
+            using (IDbConnection conexion = new SqlConnection(cadenaConexion))
+            {
+
+                conexion.Open();
+                string sentenciaSql = "SELECT CASE COUNT (*)" +
+                    "WHEN 0 THEN 'False'" +
+                    "WHEN 1 THEN 'True' " +
+                    "ELSE 'ERROR' " +
+                    "END AS registros " +
+                    "FROM ClienteXHabitacion c " +
+                    "WHERE c.id_habitacion = @id_habitacion AND  " +
+                    "GETDATE() >= (fecha_desde) AND " +
+                    "GETDATE() <= (fecha_hasta)";
+
+                return conexion.Execute(sentenciaSql, new { id_habitacion =  reserva.id_habitacion}); ;
+            }
+        }
+*/
 
 
+        public int ActualizarEstadoRenovacionADisponible(Habitacion actualizarEstadoRAD)
+        {
+            using (IDbConnection conexion = new SqlConnection(cadenaConexion))
+            {
+                conexion.Open();
+                var comando = "UPDATE Habitaciones "+
+                    "SET id_estado = CASE id_estado "+
+                    "WHEN '4' THEN '2'  "+"" +
+                    "WHEN '1' THEN '1'  "+"" +
+                    "WHEN '2' THEN '2'  "+"" +
+                    "WHEN '3' THEN '3'  "+"" +
+                    "END "+
+                    "WHERE id_habitacion = @id_habitacion";
+                return conexion.Execute(comando, new { id_habitacion = actualizarEstadoRAD.id_habitacion});
+
+            }
+        }
+
+        public int ActualizarEstadoDisponibleALimpieza(Habitacion actualizarEstadoRAD)
+        {
+            using (IDbConnection conexion = new SqlConnection(cadenaConexion))
+            {
+                conexion.Open();
+                var comando = "UPDATE Habitaciones " +
+                    "SET id_estado = CASE id_estado " +
+                    "WHEN '2' THEN '3' " + 
+                    "WHEN '1' THEN '1' " + 
+                    "WHEN '3' THEN '3' " +
+                    "WHEN '4' THEN '4' " +
+                    "END " +
+                    "WHERE id_habitacion = @id_habitacion";
+                return conexion.Execute(comando, new { id_habitacion = actualizarEstadoRAD.id_habitacion });
+
+            }
+        }
+
+
+        public int ActualizarEstadoLimpiezaADisponible(Habitacion actualizarEstadoRAD)
+        {
+            using (IDbConnection conexion = new SqlConnection(cadenaConexion))
+            {
+                conexion.Open();
+                var comando = "UPDATE Habitaciones " +
+                    "SET id_estado = CASE id_estado " +
+                    "WHEN '3' THEN '2' " +
+                    "WHEN '1' THEN '1' " +
+                    "WHEN '2' THEN '2' " +
+                    "WHEN '4' THEN '4' " +
+                    "END " +
+                    "WHERE id_habitacion = @id_habitacion";
+                return conexion.Execute(comando, new { id_habitacion = actualizarEstadoRAD.id_habitacion });
+
+            }
+        }
+
+        public int ActualizarEstadoDisponibleARenovacion(Habitacion actualizarEstadoRAD)
+        {
+            using (IDbConnection conexion = new SqlConnection(cadenaConexion))
+            {
+                conexion.Open();
+                var comando = "UPDATE Habitaciones " +
+                    "SET id_estado = CASE id_estado " +
+                    "WHEN '2' THEN '4' " +
+                    "WHEN '1' THEN '1' " +
+                    "WHEN '3' THEN '3' " +
+                    "WHEN '4' THEN '4' " +
+                    "END " +
+                    "WHERE id_habitacion = @id_habitacion";
+                return conexion.Execute(comando, new { id_habitacion = actualizarEstadoRAD.id_habitacion });
+
+            }
+        }
+
+        public int ActualizarEstadoOcupadoALimpieza(Habitacion actualizarEstadoRAD)
+        {
+            using (IDbConnection conexion = new SqlConnection(cadenaConexion))
+            {
+                conexion.Open();
+                var comando = "UPDATE Habitaciones " +
+                    "SET id_estado = CASE id_estado " +
+                    "WHEN '1' THEN '3' " +
+                    "WHEN '2' THEN '2' " +
+                    "WHEN '3' THEN '3' " +
+                    "WHEN '4' THEN '4' " +
+                    "END " +
+                    "WHERE id_habitacion = @id_habitacion";
+                return conexion.Execute(comando, new { id_habitacion = actualizarEstadoRAD.id_habitacion });
+
+            }
+        }
+
+        public int ActualizarEstadoOcupadoARenovacion(Habitacion actualizarEstadoRAD)
+        {
+            using (IDbConnection conexion = new SqlConnection(cadenaConexion))
+            {
+                conexion.Open();
+                var comando = "UPDATE Habitaciones " +
+                    "SET id_estado = CASE id_estado " +
+                    "WHEN '2' THEN '4' " +
+                    "WHEN '1' THEN '1' " +
+                    "WHEN '3' THEN '3' " +
+                    "WHEN '4' THEN '4' " +
+                    "END " +
+                    "WHERE id_habitacion = @id_habitacion";
+                return conexion.Execute(comando, new { id_habitacion = actualizarEstadoRAD.id_habitacion });
+
+            }
+        }
+
+        public int ActualizarEstadoLimpiezaAlEstadoAnterior(Habitacion actualizarEstadoRAD)
+        {
+            
+            using (IDbConnection conexion = new SqlConnection(cadenaConexion))
+            {
+                conexion.Open();
+                var comando = "" /*"UPDATE Habitaciones " +
+                    "SET id_estado = CASE id_estado " +
+                    "WHEN '2' THEN '4' " +
+                    "WHEN '1' THEN '1' " +
+                    "WHEN '3' THEN '3' " +
+                    "WHEN '4' THEN '4' " +
+                    "END " +
+                    "WHERE id_habitacion = @id_habitacion"*/;
+                return conexion.Execute(comando, new { id_habitacion = actualizarEstadoRAD.id_habitacion });
+
+            }
+            
+        }
         /*
          public int ActualizarEstado(Habitacion actualizarEstado)
         {

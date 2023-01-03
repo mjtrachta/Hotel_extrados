@@ -15,5 +15,7 @@ namespace Hotel_extrados
         public DateTime fecha_hasta { get; set; }
         public int dias_ocupados { get; set; }
 
+        public string registros { get; set; }
+
     }
 }
