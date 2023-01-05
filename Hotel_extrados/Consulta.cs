@@ -186,7 +186,7 @@ namespace DemoDapper
         }
 
    
-        public IEnumerable<Reserva> EstadoHabitacionHoy(int id_habitacion)
+        public IEnumerable<Reserva> EstadoHabitacionHoy(Habitacion habitacion)
         {
             using (IDbConnection conexion = new SqlConnection(cadenaConexion))
             {
@@ -197,10 +197,33 @@ namespace DemoDapper
                     "ELSE 'ERROR' " +
                     "END AS registros " +
                     "FROM ClienteXHabitacion c " +
-                    "WHERE c.id_habitacion = " + id_habitacion + " AND " +
+                    "WHERE c.id_habitacion = @id_habitacion AND " +
                     "GETDATE() >= (fecha_desde) AND " +
-                    "GETDATE() <= (fecha_hasta)").ToList();
+                    "GETDATE() <= (fecha_hasta)", new { id_habitacion = habitacion.id_habitacion }) ;
                 return dias;
+            }
+        }
+
+
+
+        public IEnumerable<Reserva> EstadoHabitacionHoy2(int id_habitacion)
+        {
+
+            var query = "SELECT CASE COUNT (*) " +
+                    "WHEN 0 THEN 'False' " +
+                    "WHEN 1 THEN 'True' " +
+                    "ELSE 'ERROR' " +
+                    "END AS registros " +
+                    "FROM ClienteXHabitacion c " +
+                    "WHERE c.id_habitacion = @id_habitacion AND " +
+                    "GETDATE() >= (fecha_desde) AND " +
+                    "GETDATE() <= (fecha_hasta)";
+
+            using (IDbConnection conexion = new SqlConnection(cadenaConexion))
+            {
+                conexion.Open();
+                var emp = conexion.Query<Reserva>(query, new { id_habitacion });
+                return emp;
             }
         }
         
@@ -272,6 +295,24 @@ namespace DemoDapper
                 var comando = "UPDATE Habitaciones " +
                     "SET id_estado = CASE id_estado " +
                     "WHEN '3' THEN '2' " +
+                    "WHEN '1' THEN '1' " +
+                    "WHEN '2' THEN '2' " +
+                    "WHEN '4' THEN '4' " +
+                    "END " +
+                    "WHERE id_habitacion = @id_habitacion";
+                return conexion.Execute(comando, new { id_habitacion = actualizarEstadoRAD.id_habitacion });
+
+            }
+        }
+
+        public int ActualizarEstadoLimpiezaAOcupado(Habitacion actualizarEstadoRAD)
+        {
+            using (IDbConnection conexion = new SqlConnection(cadenaConexion))
+            {
+                conexion.Open();
+                var comando = "UPDATE Habitaciones " +
+                    "SET id_estado = CASE id_estado " +
+                    "WHEN '3' THEN '1' " +
                     "WHEN '1' THEN '1' " +
                     "WHEN '2' THEN '2' " +
                     "WHEN '4' THEN '4' " +

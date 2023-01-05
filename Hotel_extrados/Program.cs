@@ -277,34 +277,30 @@ namespace DemoDapper
 
             
             Console.WriteLine("Ingrese el id de la habitacion de desea cambiar al estado anterior: ");
-            int id_habitacion = int.Parse(Console.ReadLine());
-            habitacionEstado.id_habitacion = id_habitacion;
+            habitacionEstado.id_habitacion = int.Parse(Console.ReadLine());
+            
 
-            IEnumerable<Reserva> estadoHoy = consultaBD.EstadoHabitacionHoy(id_habitacion);
-            Console.WriteLine(estadoHoy);
-
-            string estado;
+            IEnumerable<Reserva> estadoHoy = consultaBD.EstadoHabitacionHoy(habitacionEstado);
+           
 
             foreach (var item in estadoHoy)
             {
 
-                estado = (item.registros);
+               string estado = (item.registros);
    
                 if (estado == "True")
                 {
-                    consultaBD.ActualizarEstadoLimpiezaADisponible(habitacionEstado);
+                    consultaBD.ActualizarEstadoLimpiezaAOcupado(habitacionEstado);
                 }
                 else if (estado == "False")
                 {
-                    continue;
+                    consultaBD.ActualizarEstadoLimpiezaADisponible(habitacionEstado);
                 }
                 else
                 {
-                    Console.WriteLine("----------------------EEEEERRRROOROOOOOOORRRRRR---------------------------");
+                    Console.WriteLine("ERROR");
                 }
             }
-
-            
         }
 
         static void Main(string[] args)
