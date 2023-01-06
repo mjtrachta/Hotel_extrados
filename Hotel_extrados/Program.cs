@@ -1,4 +1,5 @@
-﻿using Hotel_extrados;
+﻿using Dapper;
+using Hotel_extrados;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -280,7 +281,7 @@ namespace DemoDapper
             habitacionEstado.id_habitacion = int.Parse(Console.ReadLine());
             
 
-            IEnumerable<Reserva> estadoHoy = consultaBD.EstadoHabitacionHoy(habitacionEstado);
+            IEnumerable<Reserva> estadoHoy = consultaBD.EstadoHabitacionHoy(habitacionEstado);/// ver linq para no usar foreach
            
 
             foreach (var item in estadoHoy)
@@ -302,6 +303,50 @@ namespace DemoDapper
                 }
             }
         }
+
+        public static void ActualizarEstadoYCancelar()
+        {
+            Consulta consultaBD = new Consulta();
+
+            Habitacion habitacion = new Habitacion();
+            
+
+
+            Console.WriteLine("Ingrese el id de la habitacion que desea cambiar de estado: ");
+            int id_habitacion = int.Parse(Console.ReadLine());
+            habitacion.id_habitacion = id_habitacion;
+
+            Console.WriteLine("Ingrese 1 si desea poner la habitacion en estado de Limpieza");
+            Console.WriteLine("Ingrese 2 si desea poner la habitacion en estado de Renovacion");
+            
+            int estado_final = int.Parse(Console.ReadLine());
+
+            int estadoInicial = consultaBD.ObtenerHabitacionesDisponiblesParametro(habitacion);
+
+            Console.WriteLine(estadoInicial);
+            Console.ReadLine();
+
+            if (estadoInicial == 2 /*disponible*/ && estado_final == 1 ) //disponible a limpieza
+            {
+                consultaBD.ActualizarEstadoDisponibleALimpieza(habitacion);
+            }
+            else if (estadoInicial == 2 /*disponible*/ && estado_final == 2) //disponible a renovacion
+            {
+                consultaBD.ActualizarEstadoDisponibleARenovacion(habitacion);
+            }
+            else if (estadoInicial == 1 /*ocupado*/ && estado_final == 1) //ocupado a limpeza
+            {
+                consultaBD.ActualizarEstadoOcupadoALimpieza(habitacion);
+            }
+            else if (estadoInicial == 1 /*ocupado*/ && estado_final == 2) //ocupado a renovacion
+            {
+                consultaBD.ActualizarEstadoOcupadoARenovacion(habitacion);
+            }
+
+
+        }
+
+
 
         static void Main(string[] args)
         {
@@ -336,28 +381,12 @@ namespace DemoDapper
                                     AgregarHabitacion();
                                     break;
                                 case 2:
-                                    Console.WriteLine("--------------------------------------------------------------");
-                                    Console.WriteLine("|      Has elegido la opción 4  CAMBIAR DE ESTADO R a D           |");
-                                    Console.WriteLine("--------------------------------------------------------------");
-
-                                    Consulta consultaBD = new Consulta();//
-
-                                    IEnumerable<Habitacion> habitacionRAD = consultaBD.ObtenerHabitacionesRenovacion();
-
-                                    foreach (var item in habitacionRAD)
-                                    {
-                                        Console.WriteLine("-----------------------------------------------------------------");
-                                        Console.WriteLine("ID HABITACION: " + item.id_habitacion);
-                                        Console.WriteLine("ESTADO: " + item.descripcion_estado);
-                                        Console.WriteLine("PISO: " + item.piso);
-                                        Console.WriteLine("HABITACION: " + item.numero_habitacion);
-                                        Console.WriteLine("----------------------------------------------------------------");
-                                    }
-
-
-                                    Habitacion habitacion = new Habitacion();
+                                    ActualizarEstadoYCancelar();
                                     break;
                                 case 3:
+                                    Console.WriteLine("--------------------------------------------------------------");
+                                    Console.WriteLine("|      Has elegido la opción 2  CAMBIAR DE ESTADO            |");
+                                    Console.WriteLine("--------------------------------------------------------------");
                                     ConsultarEstadoHoy();
                                     break;
                                 case 4:
@@ -565,3 +594,24 @@ namespace DemoDapper
         }
     }
 }
+
+
+
+
+/*Console.WriteLine("--------------------------------------------------------------");
+                                    Console.WriteLine("|      Has elegido la opción 2  CAMBIAR DE ESTADO            |");
+                                    Console.WriteLine("--------------------------------------------------------------");
+
+                                    Consulta consultaBD = new Consulta();//
+
+                                    IEnumerable<Habitacion> habitacionRAD = consultaBD.ObtenerHabitacionesRenovacion();
+
+                                    foreach (var item in habitacionRAD)
+                                    {
+                                        Console.WriteLine("-----------------------------------------------------------------");
+                                        Console.WriteLine("ID HABITACION: " + item.id_habitacion);
+                                        Console.WriteLine("ESTADO: " + item.descripcion_estado);
+                                        Console.WriteLine("PISO: " + item.piso);
+                                        Console.WriteLine("NÚMERO DE HABITACION: " + item.numero_habitacion);
+                                        Console.WriteLine("----------------------------------------------------------------");
+                                    }*/

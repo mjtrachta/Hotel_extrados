@@ -85,6 +85,16 @@ namespace DemoDapper
             }
         }
 
+        public int ObtenerHabitacionesDisponiblesParametro(Habitacion habitacion)
+        {
+            using (IDbConnection conexion = new SqlConnection(cadenaConexion))
+            {
+                conexion.Open();
+                var dias = conexion.QueryFirstOrDefault<int>("SELECT id_estado FROM habitaciones WHERE id_habitacion = @id_habitacion", new { id_habitacion = habitacion.id_habitacion });
+                return dias;
+            }
+        }
+
         public IEnumerable<Habitacion> ObtenerHabitacionesDisponiblesLimpieza()
         {
             using (IDbConnection conexion = new SqlConnection(cadenaConexion))
@@ -268,25 +278,6 @@ namespace DemoDapper
             }
         }
 
-        public int ActualizarEstadoDisponibleALimpieza(Habitacion actualizarEstadoRAD)
-        {
-            using (IDbConnection conexion = new SqlConnection(cadenaConexion))
-            {
-                conexion.Open();
-                var comando = "UPDATE Habitaciones " +
-                    "SET id_estado = CASE id_estado " +
-                    "WHEN '2' THEN '3' " + 
-                    "WHEN '1' THEN '1' " + 
-                    "WHEN '3' THEN '3' " +
-                    "WHEN '4' THEN '4' " +
-                    "END " +
-                    "WHERE id_habitacion = @id_habitacion";
-                return conexion.Execute(comando, new { id_habitacion = actualizarEstadoRAD.id_habitacion });
-
-            }
-        }
-
-
         public int ActualizarEstadoLimpiezaADisponible(Habitacion actualizarEstadoRAD)
         {
             using (IDbConnection conexion = new SqlConnection(cadenaConexion))
@@ -315,6 +306,27 @@ namespace DemoDapper
                     "WHEN '3' THEN '1' " +
                     "WHEN '1' THEN '1' " +
                     "WHEN '2' THEN '2' " +
+                    "WHEN '4' THEN '4' " +
+                    "END " +
+                    "WHERE id_habitacion = @id_habitacion";
+                return conexion.Execute(comando, new { id_habitacion = actualizarEstadoRAD.id_habitacion });
+
+            }
+        }
+
+
+
+
+        public int ActualizarEstadoDisponibleALimpieza(Habitacion actualizarEstadoRAD)
+        {
+            using (IDbConnection conexion = new SqlConnection(cadenaConexion))
+            {
+                conexion.Open();
+                var comando = "UPDATE Habitaciones " +
+                    "SET id_estado = CASE id_estado " +
+                    "WHEN '2' THEN '3' " +
+                    "WHEN '1' THEN '1' " +
+                    "WHEN '3' THEN '3' " +
                     "WHEN '4' THEN '4' " +
                     "END " +
                     "WHERE id_habitacion = @id_habitacion";
@@ -376,6 +388,9 @@ namespace DemoDapper
 
             }
         }
+
+
+
 
         public int ActualizarEstadoLimpiezaAlEstadoAnterior(Habitacion actualizarEstadoRAD)
         {
