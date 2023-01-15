@@ -196,15 +196,11 @@ namespace DemoDapper
             int estadoHoy = consultaBD.EstadoHabitacionHoy(habitacionEstado);
 
 
-            Console.WriteLine(estadoHoy);
-            Console.ReadLine();
-
-
             if (estadoHoy == 1)
             {
                 consultaBD.ActualizarEstadoLimpiezaAOcupado(habitacionEstado);
             }
-            else if (estadoHoy == 2)
+            else if (estadoHoy == 0)
             {
                 consultaBD.ActualizarEstadoLimpiezaADisponible(habitacionEstado);
             }
@@ -564,7 +560,7 @@ namespace DemoDapper
                 //{
                 //    Console.ForegroundColor = ConsoleColor.Red;
                 //    Console.WriteLine("-------------------------------------------");
-                //    Console.WriteLine("|     ERROR Ingrese un número valido.     |");
+                //    Console.WriteLine("|            Error al ingresar!           |");
                 //    Console.WriteLine("-------------------------------------------");
                 //    Console.ForegroundColor = ConsoleColor.White;
                 //}

@@ -275,6 +275,20 @@ namespace DemoDapper
 
             }
         }
+        public DateTime DiasOcupados(int id_habitacion)
+        {
+            using (IDbConnection conexion = new SqlConnection(cadenaConexion))
+            {
+                conexion.Open();
+                var dias = conexion.QueryFirstOrDefault<DateTime>("SELECT fecha_hasta " +
+                                                   "FROM ClienteXHabitacion " +
+                                                   "WHERE  id_habitacion = @id_habitacion AND " +
+                                                   "GETDATE() >= (fecha_desde) AND  " +
+                                                   "GETDATE() <= (fecha_hasta)",
+                                                    new { id_habitacion = id_habitacion });
+                return dias;
+            }
+        }
         // AT CLIENTE 2
         public IEnumerable<Habitacion> ObtenerHabitacionesDisponibles()
         {
@@ -338,20 +352,7 @@ namespace DemoDapper
 
 
         // TEST
-        public DateTime DiasOcupados(int id_habitacion)
-        {
-            using (IDbConnection conexion = new SqlConnection(cadenaConexion))
-            {
-                conexion.Open();
-                var dias = conexion.QueryFirstOrDefault<DateTime>("SELECT fecha_hasta " +
-                                                   "FROM ClienteXHabitacion " +
-                                                   "WHERE  id_habitacion = @id_habitacion AND " +
-                                                   "GETDATE() >= (fecha_desde) AND  " +
-                                                   "GETDATE() <= (fecha_hasta)",
-                                                    new { id_habitacion = id_habitacion });
-                return dias;
-            }
-        }
+        
         public int ActualizarEstado(Habitacion actualizarEstado)
         {
             using (IDbConnection conexion = new SqlConnection(cadenaConexion))
