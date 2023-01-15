@@ -165,6 +165,15 @@ namespace DemoDapper
                     "WHERE c.id_habitacion = @id_habitacion AND " +
                     "GETDATE() >= (fecha_desde) AND " +
                     "GETDATE() <= (fecha_hasta)", new { id_habitacion = habitacion.id_habitacion });
+
+                /*
+                 creo que se puede abreviar asi
+                 SELECT COUNT (*) as registro
+                 FROM ClienteXHabitacion c 
+                 WHERE c.id_habitacion = @id_habitacion AND 
+                 GETDATE() >= (fecha_desde) AND 
+                 GETDATE() <= (fecha_hasta)
+                 */
                 return dias;
             }
         }
@@ -244,7 +253,7 @@ namespace DemoDapper
             using (IDbConnection conexion = new SqlConnection(cadenaConexion))
             {
                 conexion.Open();
-                var habitaciones = conexion.Query<Habitacion>("SELECT e.descripcion_estado, h.piso, h.numero_habitacion, h.camas, h.cochera, h.precio, h.tv, h.desayuno " +
+                var habitaciones = conexion.Query<Habitacion>("SELECT * " +
                                                               "FROM habitaciones h " +
                                                               "JOIN Estado_habitaciones e " +
                                                               "ON h.id_estado = e.id_estado " +
@@ -257,7 +266,7 @@ namespace DemoDapper
             using (IDbConnection conexion = new SqlConnection(cadenaConexion))
             {
                 conexion.Open();
-                var habitaciones = conexion.Query<Habitacion>("SELECT e.descripcion_estado, h.piso, h.numero_habitacion, h.camas ,h.cochera, h.precio, h.servicio_habitacion, h.hidromasajes " +
+                var habitaciones = conexion.Query<Habitacion>("SELECT * " +
                                                                   "FROM habitaciones h " +
                                                                   "JOIN Estado_habitaciones e " +
                                                                   "ON h.id_estado = e.id_estado " +
@@ -329,12 +338,17 @@ namespace DemoDapper
 
 
         // TEST
-        public IEnumerable<Reserva> DiasOcupados()
+        public DateTime DiasOcupados(int id_habitacion)
         {
             using (IDbConnection conexion = new SqlConnection(cadenaConexion))
             {
                 conexion.Open();
-                var dias = conexion.Query<Reserva>("SELECT cuil_cliente, id_habitacion, fecha_desde, DATEDIFF(DAY, fecha_desde, fecha_hasta) AS 'dias_ocupados' \r\nFROM ClienteXHabitacion\r\nWHERE cuil_cliente = 20422895460 and id_habitacion = 2 and fecha_desde = '02-02-2023'").ToList();
+                var dias = conexion.QueryFirstOrDefault<DateTime>("SELECT fecha_hasta " +
+                                                   "FROM ClienteXHabitacion " +
+                                                   "WHERE  id_habitacion = @id_habitacion AND " +
+                                                   "GETDATE() >= (fecha_desde) AND  " +
+                                                   "GETDATE() <= (fecha_hasta)",
+                                                    new { id_habitacion = id_habitacion });
                 return dias;
             }
         }

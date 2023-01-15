@@ -262,9 +262,15 @@ namespace DemoDapper
 
             foreach (var item in habitacionComun)
             {
-                int estado = item.id_estado;
 
+                int idc = item.id_habitacion;
+                DateTime dias = consultaBD.DiasOcupados(idc);
+
+                int estadoc = item.id_estado;
+                
                 Console.WriteLine("-------------------------------------------------------------");
+                Console.WriteLine("ID COMUN: " + item.id_habitacion);
+                Console.WriteLine("ID ESTADO: " + item.id_estado);
                 Console.WriteLine("ESTADO: " + item.descripcion_estado);
                 Console.WriteLine("PISO: " + item.piso);
                 Console.WriteLine("HABITACION: " + item.numero_habitacion);
@@ -273,14 +279,20 @@ namespace DemoDapper
                 Console.WriteLine("PRECIO: " + item.precio);
                 Console.WriteLine("TV: " + item.tv);
                 Console.WriteLine("DESAYUNO: " + item.desayuno);
-                if(estado == 1)
+                if(estadoc == 1)
                 {
-                    Console.WriteLine("Ocupado hasta el día: " + );
+                    Console.WriteLine("Ocupado hasta el día: " + dias);
+                    continue;
                 }
                 Console.WriteLine("-------------------------------------------------------------");
             }
             foreach (var item in habitacionVIP)
             {
+                int estadov = item.id_estado;
+                int idv = item.id_habitacion;
+
+                DateTime dias = consultaBD.DiasOcupados(idv);
+
                 Console.WriteLine("-------------------------------------------------------------");
                 Console.WriteLine("ESTADO: " + item.descripcion_estado);
                 Console.WriteLine("PISO: " + item.piso);
@@ -292,7 +304,10 @@ namespace DemoDapper
                 Console.WriteLine("SERVICIO HABITACION: " + item.servicio_habitacion);
                 Console.WriteLine("HIDRO: " + item.hidromasajes);
                 Console.WriteLine("-------------------------------------------------------------");
-
+                if (estadov == 1)
+                {
+                    Console.WriteLine("Ocupado hasta el día: " + dias);
+                }
             }
         }
         // AT CLIENTE 2
@@ -399,7 +414,7 @@ namespace DemoDapper
 
 
         // TEST
-        public static void ListarDiasOcupados()
+      /*  public static void ListarDiasOcupados()
         {
             Consulta consultaBD = new Consulta();
 
@@ -419,6 +434,7 @@ namespace DemoDapper
 
             }
         }
+      */
 
 
         static void Main(string[] args)
