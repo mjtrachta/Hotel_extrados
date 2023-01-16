@@ -156,24 +156,26 @@ namespace DemoDapper
             using (IDbConnection conexion = new SqlConnection(cadenaConexion))
             {
                 conexion.Open();
-                var dias = conexion.QueryFirstOrDefault<int>("SELECT CASE COUNT (*) " +
-                    "WHEN 0 THEN 0 " +
-                    "WHEN 1 THEN 1 " +
-                    "ELSE '-1' " +
-                    "END AS registros " +
+                var dias = conexion.QueryFirstOrDefault<int>("SELECT COUNT (*) AS registros " +
                     "FROM ClienteXHabitacion c " +
                     "WHERE c.id_habitacion = @id_habitacion AND " +
                     "GETDATE() >= (fecha_desde) AND " +
                     "GETDATE() <= (fecha_hasta)", new { id_habitacion = habitacion.id_habitacion });
 
-                /*
-                 creo que se puede abreviar asi
-                 SELECT COUNT (*) as registro
-                 FROM ClienteXHabitacion c 
-                 WHERE c.id_habitacion = @id_habitacion AND 
-                 GETDATE() >= (fecha_desde) AND 
-                 GETDATE() <= (fecha_hasta)
-                 */
+                return dias;
+            }
+        }
+        public long Cliente(Habitacion habitacion)
+        {
+            using (IDbConnection conexion = new SqlConnection(cadenaConexion))
+            {
+                conexion.Open();
+                var dias = conexion.QueryFirstOrDefault<long>("SELECT cuil_cliente " +
+                    "FROM ClienteXHabitacion c " +
+                    "WHERE c.id_habitacion = @id_habitacion AND " +
+                    "GETDATE() >= (fecha_desde) AND " +
+                    "GETDATE() <= (fecha_hasta)", new { id_habitacion = habitacion.id_habitacion });
+
                 return dias;
             }
         }
@@ -275,7 +277,7 @@ namespace DemoDapper
 
             }
         }
-        public DateTime DiasOcupados(int id_habitacion)
+        public DateTime DiasOcupados(int id_habitacion) // si devuelve 1 esta ocupado si es 0 disponible
         {
             using (IDbConnection conexion = new SqlConnection(cadenaConexion))
             {
@@ -326,10 +328,24 @@ namespace DemoDapper
             {
 
                 conexion.Open();
-                string sentenciaSql = "INSERT INTO [ClienteXHabitacion]([cuil_cliente],[id_habitacion],[fecha_desde],[fecha_hasta]) " +
-                                  "VALUES(@cuil_cliente, @id_habitacion, @fecha_desde, @fecha_hasta)";
+                string sentenciaSql = "INSERT INTO [ClienteXHabitacion]([cuil_cliente],[id_habitacion],[fecha_desde],[fecha_hasta],[bandera]) " +
+                                  "VALUES(@cuil_cliente, @id_habitacion, @fecha_desde, @fecha_hasta, @bandera)";
 
-                return conexion.Execute(sentenciaSql, new { cuil_cliente = reserva.cuil_cliente, id_habitacion = reserva.id_habitacion, fecha_desde = reserva.fecha_desde, fecha_hasta = reserva.fecha_hasta }); ;
+                return conexion.Execute(sentenciaSql, new { cuil_cliente = reserva.cuil_cliente, id_habitacion = reserva.id_habitacion, fecha_desde = reserva.fecha_desde, fecha_hasta = reserva.fecha_hasta, bandera = reserva.bandera }); ;
+            }
+        }
+        public int ColisionDeFechas(Reserva habitacion, DateTime fecha1)
+        {
+            using (IDbConnection conexion = new SqlConnection(cadenaConexion))
+            {
+                conexion.Open();
+                var dias = conexion.QueryFirstOrDefault<int>("SELECT COUNT (*) AS registros " +
+                    "FROM ClienteXHabitacion c " +
+                    "WHERE c.id_habitacion = @id_habitacion AND " +
+                    "@fecha1 >= (fecha_desde) AND " +
+                    "@fecha1 <= (fecha_hasta)", new { id_habitacion = habitacion.id_habitacion, fecha1 = fecha1 });
+
+                return dias;
             }
         }
         //AT CLIENTE 5
@@ -388,6 +404,53 @@ namespace DemoDapper
             }
 
         }
+
+        public IEnumerable<Habitacion> ObtenerHabitacionesLimpieza()
+        {
+            using (IDbConnection conexion = new SqlConnection(cadenaConexion))
+            {
+                conexion.Open();
+                var habitaciones = conexion.Query<Habitacion>("SELECT h.id_habitacion, h.piso, h.numero_habitacion " +
+                                                                "FROM habitaciones h " +
+                                                                "WHERE h.id_estado = 3").ToList();
+                return habitaciones;
+
+            }
+        }
+
+        public int ExisteHabitacionLimpia(int habitacion)
+        {
+            using (IDbConnection conexion = new SqlConnection(cadenaConexion))
+            {
+                conexion.Open();
+                var comando = "SELECT COUNT(*)  " +
+                    "FROM Habitaciones " +
+                    "WHERE EXISTS (SELECT id_estado " +
+                    "              FROM Habitaciones " +
+                    "              WHERE id_habitacion = @id_habitacion) " +
+                    "              and id_habitacion = @id_habitacion and id_estado = 3;";
+                return conexion.QueryFirstOrDefault<int>(comando, new { id_habitacion = habitacion });
+
+            }
+        }
+
+        public int ExisteHabitacionRenovacion(int habitacion)
+        {
+            using (IDbConnection conexion = new SqlConnection(cadenaConexion))
+            {
+                conexion.Open();
+                var comando = "SELECT COUNT(*)  " +
+                    "FROM Habitaciones " +
+                    "WHERE EXISTS (SELECT id_habitacion " +
+                    "              FROM Habitaciones " +
+                    "              WHERE id_habitacion = @id_habitacion) " +
+                    "              and id_habitacion = @id_habitacion and id_estado = 4;";
+                return conexion.QueryFirstOrDefault<int>(comando, new { id_habitacion = habitacion });
+
+            }
+        }
+
+
 
     }
 }

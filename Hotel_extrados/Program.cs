@@ -34,10 +34,10 @@ namespace DemoDapper
         public static void MenuAdmin()
         {
             Console.WriteLine("+--------------------------------------------------------------------------------+");
-            Console.WriteLine("|       1. Agregar una habitacion                                            adm |");
-            Console.WriteLine("|       2. Cambiar estado del habitacion limpieza-disponible-ocupado-remode  adm |");
-            Console.WriteLine("|       3. Cambiar estado del habitacion limpieza-estado anterior            adm |");
-            Console.WriteLine("|       4. Cambiar estado del habitacion renovacion-disponible               adm |");
+            Console.WriteLine("|       1. Agregar una habitación                                                |");
+            Console.WriteLine("|       2. Cambiar estado de la habitación a limpieza o remodelación             |");
+            Console.WriteLine("|       3. Cambiar estado del habitación de limpieza al estado anterior          |");
+            Console.WriteLine("|       4. Cambiar estado del habitación de renovación a disponible              |");
             Console.WriteLine("|       5. Salir                                                                 |");
             Console.ForegroundColor = ConsoleColor.Blue;
             Console.WriteLine("|   Elige una de las opciones:                                                   |");
@@ -49,6 +49,7 @@ namespace DemoDapper
         // LOGIN
         public static int Login()
         {
+            // RESOLVER QUE NO DISTINGUE ENTRE MAYUSCULAS Y MINUSCULAS
             Consulta c1 = new Consulta();
 
             Console.WriteLine("INGRESE SU EMAIL: ");
@@ -63,6 +64,7 @@ namespace DemoDapper
         // ADMIN 1
         public static void AgregarHabitacion()
         {
+            //validar que no ingrese otra vez si se equivoca
             Console.WriteLine("--------------------------------------------------------------");
             Console.WriteLine("|      Has elegido la opción 1  AGREGAR HABITACIÓN           |");
             Console.WriteLine("--------------------------------------------------------------");
@@ -155,25 +157,42 @@ namespace DemoDapper
 
             int estadoInicial = consultaBD.ObtenerHabitacionesDisponiblesParametro(habitacion);
 
-            Console.WriteLine(estadoInicial);
-            Console.ReadLine();
 
             if (estadoInicial == 2 /*disponible*/ && estado_final == 1) //disponible a limpieza
             {
                 consultaBD.ActualizarEstadoDisponibleALimpieza(habitacion);
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("Se cambio correctamente!");
+                Console.ForegroundColor = ConsoleColor.White;
             }
             else if (estadoInicial == 2 /*disponible*/ && estado_final == 2) //disponible a renovacion
             {
                 consultaBD.ActualizarEstadoDisponibleARenovacion(habitacion);
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("Se cambio correctamente!");
+                Console.ForegroundColor = ConsoleColor.White;
             }
             else if (estadoInicial == 1 /*ocupado*/ && estado_final == 1) //ocupado a limpeza
             {
                 consultaBD.ActualizarEstadoOcupadoALimpieza(habitacion);
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("Se cambio correctamente!");
+                Console.ForegroundColor = ConsoleColor.White;
             }
             else if (estadoInicial == 1 /*ocupado*/ && estado_final == 2) //ocupado a renovacion
             {
                 consultaBD.ActualizarEstadoOcupadoARenovacion(habitacion);
                 consultaBD.ActualizarBandera(reserva);
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("Se cambio correctamente!");
+                Console.ForegroundColor = ConsoleColor.White;
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Ingreso un opción incorrecta!");
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.WriteLine("Intentelo nuevamente");
             }
         }
         //ADMIN 3
@@ -188,25 +207,50 @@ namespace DemoDapper
 
             Habitacion habitacionEstado = new Habitacion();
 
+            IEnumerable<Habitacion> habitacionLimpieza = consultaBD.ObtenerHabitacionesLimpieza();
+            Console.WriteLine("-----------------------------------------------------------------");
+            Console.WriteLine("               HABITACIONES EN ESTADO DE LIMPIEZA                ");
+            Console.WriteLine("-----------------------------------------------------------------");
+            foreach (var item in habitacionLimpieza)
+            {
+                Console.WriteLine("-----------------------------------------------------------------");
+                Console.WriteLine("ID HABITACION: " + item.id_habitacion);
+                Console.WriteLine("PISO: " + item.piso);
+                Console.WriteLine("NRO HABITACION: " + item.numero_habitacion);
+                Console.WriteLine("-----------------------------------------------------------------");
+            }
+
 
             Console.WriteLine("Ingrese el id de la habitacion de desea cambiar al estado anterior: ");
-            habitacionEstado.id_habitacion = int.Parse(Console.ReadLine());
+            int variableIntermedia = int.Parse(Console.ReadLine());
 
+            habitacionEstado.id_habitacion = variableIntermedia;
+
+            int serONoSer = consultaBD.ExisteHabitacionLimpia(variableIntermedia);
 
             int estadoHoy = consultaBD.EstadoHabitacionHoy(habitacionEstado);
 
+            long cliente = consultaBD.Cliente(habitacionEstado);
 
-            if (estadoHoy == 1)
+            if (estadoHoy == 1 && serONoSer ==  1)
             {
                 consultaBD.ActualizarEstadoLimpiezaAOcupado(habitacionEstado);
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("Se cambio correctamente a ocupado por: " + cliente);
+                Console.ForegroundColor = ConsoleColor.White;
             }
-            else if (estadoHoy == 0)
+            else if (estadoHoy == 0 && serONoSer == 1)
             {
                 consultaBD.ActualizarEstadoLimpiezaADisponible(habitacionEstado);
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("Se cambio correctamente!");
+                Console.ForegroundColor = ConsoleColor.White;
             }
             else
             {
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("ERROR");
+                Console.ForegroundColor = ConsoleColor.White;
             }
 
         }
@@ -221,6 +265,11 @@ namespace DemoDapper
 
             IEnumerable<Habitacion> habitacionRenovacionADisponible = consultaBD2.ObtenerHabitacionesRenovacion();
 
+
+
+            Console.WriteLine("-----------------------------------------------------------------");
+            Console.WriteLine("               HABITACIONES EN ESTADO DE RENOVACION                ");
+            Console.WriteLine("-----------------------------------------------------------------");
             foreach (var item in habitacionRenovacionADisponible)
             {
                 Console.WriteLine("-----------------------------------------------------------------");
@@ -235,8 +284,26 @@ namespace DemoDapper
             Habitacion habitacion2 = new Habitacion();
 
             Console.WriteLine("Ingrese el id del de la habitacion que desea actualizar: ");
-            habitacion2.id_habitacion = int.Parse(Console.ReadLine());
-            consultaBD2.ActualizarEstadoRenovacionADisponible(habitacion2);
+            int variableIntermedia = int.Parse(Console.ReadLine());
+            habitacion2.id_habitacion = variableIntermedia;
+
+            int serONoSer = consultaBD2.ExisteHabitacionRenovacion(variableIntermedia);
+
+            if (serONoSer == 1)
+            {
+                consultaBD2.ActualizarEstadoRenovacionADisponible(habitacion2);
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("Se cambio correctamente!");
+                Console.ForegroundColor = ConsoleColor.White;
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("ERROR");
+                Console.ForegroundColor = ConsoleColor.White;
+            }
+           
+            
         }
 
 
@@ -245,16 +312,11 @@ namespace DemoDapper
         {
             Consulta consultaBD = new Consulta();
 
-
-
             IEnumerable<Habitacion> habitacionComun = consultaBD.ObtenerHabitacionesComunes();
             IEnumerable<Habitacion> habitacionVIP = consultaBD.ObtenerHabitacionesVip();
             Console.ForegroundColor = ConsoleColor.Blue;
             Console.WriteLine("---------------------LISTA DE HABITACIONES----------------------");
             Console.ForegroundColor = ConsoleColor.White;
-
-           
-            
 
             foreach (var item in habitacionComun)
             {
@@ -321,6 +383,7 @@ namespace DemoDapper
             foreach (var item in habitacionDisponible)
             {
                 Console.WriteLine("-----------------------------------------------------------------");
+                Console.WriteLine("ID HABITACION: " + item.id_habitacion);
                 Console.WriteLine("ESTADO: " + item.descripcion_estado);
                 Console.WriteLine("TIPO: " + item.descripcion);
                 Console.WriteLine("PISO: " + item.piso);
@@ -371,14 +434,37 @@ namespace DemoDapper
             reserva.cuil_cliente = Int64.Parse(Console.ReadLine());
             Console.WriteLine("Ingrese el id de la habitacion: ");
             reserva.id_habitacion = int.Parse(Console.ReadLine());
+
             Console.WriteLine("Ingrese la fecha de ingreso: ");
-            reserva.fecha_desde = DateTime.Parse(Console.ReadLine());
+             DateTime variable1= DateTime.Parse(Console.ReadLine());
+            reserva.fecha_desde = variable1;
+
             Console.WriteLine("Ingrese la fecha de salida: ");
-            reserva.fecha_hasta = DateTime.Parse(Console.ReadLine());
+            DateTime variable2 = DateTime.Parse(Console.ReadLine());
+            reserva.fecha_hasta = variable2;
 
-            insertar.CargarReserva(reserva);
+            int resultado1 = insertar.ColisionDeFechas(reserva, variable1);
+            int resultado2 = insertar.ColisionDeFechas(reserva, variable2);
+
+            reserva.bandera = bool.Parse("True");
+
+            if (resultado1 == 0 && resultado2 == 0)
+            {
+                insertar.CargarReserva(reserva);
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("Se cargo correctamente la reserva");
+                Console.ForegroundColor = ConsoleColor.White;
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Error colisión de fechas");
+                Console.ForegroundColor = ConsoleColor.White;
+            }
+
+
+            
         }
-
         // AT CLIENTE 5
         public static void LimpiezaADisponible()
         {
@@ -437,134 +523,136 @@ namespace DemoDapper
         {
 
             bool salir = false;
-            
+
 
             while (!salir)
             {
                 LogoExtrados();
                 //try
                 //{
-                int opcion = Login();
+                    int opcion = Login();
 
-                switch (opcion)
-                {
-                  
-                    case 1:
-                        Console.WriteLine("----------------------------------------------------------------");
-                        Console.WriteLine("|        BIENVIENDO  AL PANEL DE ADMINISTRADOR                 |");
-                        Console.WriteLine("----------------------------------------------------------------");
+                    switch (opcion)
+                    {
 
-                        bool salir1 = false;
+                        case 1:
+                            Console.WriteLine("----------------------------------------------------------------");
+                            Console.WriteLine("|        BIENVIENDO  AL PANEL DE ADMINISTRADOR                 |");
+                            Console.WriteLine("----------------------------------------------------------------");
 
-                        while (!salir1)
-                        {
-                            MenuAdmin();
-                            int opcion1 = Int32.Parse(Console.ReadLine());
-                            switch (opcion1)
+                            bool salir1 = false;
+
+                            while (!salir1)
                             {
-                                case 1:
-                                    AgregarHabitacion();
-                                    break;
-                                case 2:
-                                    ActualizarEstadoYCancelar();
-                                    break;
-                                case 3:
-                                    ConsultarEstadoHoy();
-                                    break;
-                                case 4:
-                                    RenovacionADisponible();
-                                    break;
-                                    
-                                case 5:
+                                MenuAdmin();
+                                int opcion1 = Int32.Parse(Console.ReadLine());
+                                switch (opcion1)
+                                {
+                                    case 1:
+                                        AgregarHabitacion();
+                                        break;
+                                    case 2:
+                                        ActualizarEstadoYCancelar();
+                                        break;
+                                    case 3:
+                                        ConsultarEstadoHoy();
+                                        break;
+                                    case 4:
+                                        RenovacionADisponible();
+                                        break;
 
-                                    Console.WriteLine("SALIR");
-                                    salir1 = true;
-                                    break;
+                                    case 5:
 
-                                default:
-                                    Console.ForegroundColor = ConsoleColor.Red;
-                                    Console.WriteLine("-------------------------------------------");
-                                    Console.WriteLine("|  ERROR !! Elige una opcion entre 1 y 5  |");
-                                    Console.WriteLine("-------------------------------------------");
-                                    Console.ForegroundColor = ConsoleColor.White;
+                                        Console.WriteLine("SALIR");
+                                        salir1 = true;
+                                        break;
 
-                                    break;
+                                    default:
+                                        Console.ForegroundColor = ConsoleColor.Red;
+                                        Console.WriteLine("-------------------------------------------");
+                                        Console.WriteLine("|  ERROR !! Elige una opcion entre 1 y 5  |");
+                                        Console.WriteLine("-------------------------------------------");
+                                        Console.ForegroundColor = ConsoleColor.White;
+
+                                        break;
+                                }
                             }
-                        }
 
-                        break;
+                            break;
 
-                    case 2:
-                        Console.WriteLine("----------------------------------------------------------------");
-                        Console.WriteLine("|      BIENVIENDO  AL PANEL DE ATENCION AL CLIENTE             |");
-                        Console.WriteLine("----------------------------------------------------------------");
+                        case 2:
+                            Console.WriteLine("----------------------------------------------------------------");
+                            Console.WriteLine("|      BIENVIENDO  AL PANEL DE ATENCION AL CLIENTE             |");
+                            Console.WriteLine("----------------------------------------------------------------");
 
-                       
-                        bool salir2 = false;
 
-                        while (!salir2)
-                        {
-                            MenuAtencion();
-                            int opcion2 = Int32.Parse(Console.ReadLine());
-                            switch (opcion2)
+                            bool salir2 = false;
+
+                            while (!salir2)
                             {
-                                case 1:
-                                    ListarHabitaciones();
-                                    break;
-                                case 2:
-                                    ListarHabitacionesDisponibles();
-                                    break;
-                                case 3:
-                                    AgregarCliente();                                    
-                                    break;
-                                case 4:
-                                    AgregarReserva();
-                                    break;
-                                case 5:
-                                    LimpiezaADisponible();
-                                    break;
-                                case 6:
-                                    Console.WriteLine("SALIR");
-                                    salir2 = true;
-                                    break;
+                                MenuAtencion();
+                                int opcion2 = Int32.Parse(Console.ReadLine());
+                                switch (opcion2)
+                                {
+                                    case 1:
+                                        ListarHabitaciones();
+                                        break;
+                                    case 2:
+                                        ListarHabitacionesDisponibles();
+                                        break;
+                                    case 3:
+                                        AgregarCliente();
+                                        break;
+                                    case 4:
+                                        AgregarReserva();
+                                        break;
+                                    case 5:
+                                        LimpiezaADisponible();
+                                        break;
+                                    case 6:
+                                        Console.WriteLine("SALIR");
+                                        salir2 = true;
+                                        break;
 
-                                default:
-                                    Console.ForegroundColor = ConsoleColor.Red;
-                                    Console.WriteLine("-------------------------------------------");
-                                    Console.WriteLine("|  ERROR !! Elige una opcion entre 1 y 6  |");
-                                    Console.WriteLine("-------------------------------------------");
-                                    Console.ForegroundColor = ConsoleColor.White;
+                                    default:
+                                        Console.ForegroundColor = ConsoleColor.Red;
+                                        Console.WriteLine("-------------------------------------------");
+                                        Console.WriteLine("|  ERROR !! Elige una opcion entre 1 y 6  |");
+                                        Console.WriteLine("-------------------------------------------");
+                                        Console.ForegroundColor = ConsoleColor.White;
 
-                                    break;
+                                        break;
+                                }
                             }
-                        }
 
-                        break;
-                    case 3:
+                            break;
+                        case 3:
 
-                        Console.WriteLine("SALIR");
-                        salir = true;
-                        break;
+                            Console.WriteLine("SALIR");
+                            salir = true;
+                            break;
 
-                    default:
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("-------------------------------------------");
-                        Console.WriteLine("|  ERROR !! Elige una opcion entre 1 y 3  |");
-                        Console.WriteLine("-------------------------------------------");
-                        Console.ForegroundColor = ConsoleColor.White;
+                        default:
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("-----------------------------------------------");
+                            Console.WriteLine("|  Error verifique su usuario o contraseña!!  |");
+                            Console.WriteLine("-----------------------------------------------");
+                            Console.ForegroundColor = ConsoleColor.White;
 
-                        break;
-                }
+                            break;
+                    }
+
                 //}
                 //catch (Exception)
                 //{
                 //    Console.ForegroundColor = ConsoleColor.Red;
                 //    Console.WriteLine("-------------------------------------------");
-                //    Console.WriteLine("|            Error al ingresar!           |");
+                //    Console.WriteLine("|            Error!          |");
                 //    Console.WriteLine("-------------------------------------------");
                 //    Console.ForegroundColor = ConsoleColor.White;
                 //}
             }
+            
         }
     }
 }
