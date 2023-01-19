@@ -2,6 +2,7 @@
 using Hotel_extrados;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 
@@ -23,11 +24,11 @@ namespace DemoDapper
         public static void MenuAtencion()
         {
             Console.WriteLine("+--------------------------------------------------------------------------------+");
-            Console.WriteLine("|       1. Listar todas las habitaciones    (ocupadas x cuantos dias)         ac |");
-            Console.WriteLine("|       2. Listar todas las habitaciones disponibles                          ac |");
-            Console.WriteLine("|       3. Cargar cliente                                                     ac |");
-            Console.WriteLine("|       4. Reservar habitacion                                                ac |");
-            Console.WriteLine("|       5. Cambiar estado del habitacion limpieza-disponible                  ac |");
+            Console.WriteLine("|       1. Listar todas las habitaciones                                         |");
+            Console.WriteLine("|       2. Listar todas las habitaciones disponibles                             |");
+            Console.WriteLine("|       3. Cargar cliente                                                        |");
+            Console.WriteLine("|       4. Reservar habitacion                                                   |");
+            Console.WriteLine("|       5. Cambiar estado del habitacion limpieza-disponible                     |");
             Console.WriteLine("|       6. Salir                                                                 |");
             Console.WriteLine("+--------------------------------------------------------------------------------+");
         }
@@ -47,6 +48,7 @@ namespace DemoDapper
         }
 
         // LOGIN
+       
         public static int Login()
         {
             // RESOLVER QUE NO DISTINGUE ENTRE MAYUSCULAS Y MINUSCULAS
@@ -60,6 +62,8 @@ namespace DemoDapper
             int a = c1.Login(mail, pass);
             return a;
         }
+
+
 
         // ADMIN 1
         public static void AgregarHabitacion()
@@ -179,6 +183,8 @@ namespace DemoDapper
                 Console.WriteLine("Se cambio correctamente!");
                 Console.ForegroundColor = ConsoleColor.White;
             }
+
+
             else if (estadoInicial == 1 /*ocupado*/ && estado_final == 2) //ocupado a renovacion
             {
                 consultaBD.ActualizarEstadoOcupadoARenovacion(habitacion);
@@ -187,6 +193,8 @@ namespace DemoDapper
                 Console.WriteLine("Se cambio correctamente!");
                 Console.ForegroundColor = ConsoleColor.White;
             }
+
+
             else
             {
                 Console.ForegroundColor = ConsoleColor.Red;
@@ -430,6 +438,8 @@ namespace DemoDapper
             Reserva reserva = new Reserva();
             Consulta insertar = new Consulta();
 
+
+
             Console.WriteLine("Ingrese cuil del cliente: ");
             reserva.cuil_cliente = Int64.Parse(Console.ReadLine());
             Console.WriteLine("Ingrese el id de la habitacion: ");
@@ -443,9 +453,13 @@ namespace DemoDapper
             DateTime variable2 = DateTime.Parse(Console.ReadLine());
             reserva.fecha_hasta = variable2;
 
+
+
             int resultado1 = insertar.ColisionDeFechas(reserva, variable1);
             int resultado2 = insertar.ColisionDeFechas(reserva, variable2);
 
+
+            // dato obligatorio
             reserva.bandera = bool.Parse("True");
 
             if (resultado1 == 0 && resultado2 == 0)
@@ -494,6 +508,7 @@ namespace DemoDapper
             actualizar.ActualizarEstado(habitacion);
         }
 
+       
 
         // TEST
       /*  public static void ListarDiasOcupados()
@@ -528,8 +543,8 @@ namespace DemoDapper
             while (!salir)
             {
                 LogoExtrados();
-                //try
-                //{
+                try
+                {
                     int opcion = Login();
 
                     switch (opcion)
@@ -642,16 +657,16 @@ namespace DemoDapper
                             break;
                     }
 
-                //}
-                //catch (Exception)
-                //{
-                //    Console.ForegroundColor = ConsoleColor.Red;
-                //    Console.WriteLine("-------------------------------------------");
-                //    Console.WriteLine("|            Error!          |");
-                //    Console.WriteLine("-------------------------------------------");
-                //    Console.ForegroundColor = ConsoleColor.White;
-                //}
             }
+                catch (Exception)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("-------------------------------------------");
+                Console.WriteLine("|                     Error!              |");
+                Console.WriteLine("-------------------------------------------");
+                Console.ForegroundColor = ConsoleColor.White;
+            }
+        }
             
         }
     }

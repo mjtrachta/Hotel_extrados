@@ -365,17 +365,13 @@ namespace DemoDapper
 
             }
         }
-
-
-        // TEST
-        
         public int ActualizarEstado(Habitacion actualizarEstado)
         {
             using (IDbConnection conexion = new SqlConnection(cadenaConexion))
             {
                 conexion.Open();
                 var comando = "UPDATE Habitaciones " +
-                              " SET id_estado = CASE id_estado " +
+                              "SET id_estado = CASE id_estado " +
                               "WHEN '2' THEN '3'  " +
                               "WHEN '3' THEN '2'  " +
                               "ELSE NULL  " +
@@ -385,6 +381,9 @@ namespace DemoDapper
 
             }
         }
+
+
+        // TEST
         public int ActualizarEstadoLimpiezaAlEstadoAnterior(Habitacion actualizarEstadoRAD)
         {
 
